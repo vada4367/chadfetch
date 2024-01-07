@@ -6,7 +6,10 @@
 // INTO OTHER PARTS OF THE CODE
 //
 
-use libc::{c_char, c_int, passwd, size_t, uid_t, FILE};
+use libc::{
+    c_char, c_int, passwd, size_t,
+    sysinfo as sysinfo_struct, uid_t, utsname, FILE,
+};
 
 pub type CSTR = *const c_char;
 
@@ -30,6 +33,13 @@ extern "C" {
     pub fn gethostname(
         name: *mut c_char,
         len: size_t,
+    ) -> c_int;
+    pub fn uname(buf: *mut utsname) -> c_int;
+    pub fn sysinfo(info: *mut sysinfo_struct) -> c_int;
+    pub fn sprintf(
+        s: *mut c_char,
+        format: *const c_char,
+        ...
     ) -> c_int;
 }
 

@@ -20,6 +20,8 @@ fn main(_argc: *const *const i8, _argv: isize) -> isize {
         user_host: true,
         os: true,
         device: true,
+        kernel: true,
+        uptime: true,
     };
 
     system.print_fetch(settings);

@@ -1,20 +1,25 @@
 #![allow(
     unreachable_patterns,
     unused_variables,
-    unused_imports
+    unused_imports,
+    invalid_value
 )]
 
 use crate::libc::{
     c_str, fopen, fscanf, geteuid, gethostname, getpwuid,
-    printf, strcat, CSTR,
+    printf, sprintf, strcat, sysinfo as sysinfo_function,
+    uname, CSTR,
 };
 
-use libc::{c_char, size_t};
+use libc::{
+    c_char, size_t, sysinfo as sysinfo_struct, utsname,
+};
 
 use crate::fetch_info::FetchInfo;
 use crate::logos::*;
 use crate::os_names::*;
 
+use core::mem::MaybeUninit;
 use core::slice;
 
 #[derive(PartialEq)]
@@ -30,7 +35,6 @@ impl System {
             _ => return System::Unknown,
         }
     }
-
 
     pub fn print_fetch(&self, settings: FetchInfo) {
         unsafe {
@@ -73,17 +77,19 @@ impl System {
             count_of_info += 1;
         }
         if settings.os {
-            Self::print_info(
-                Self::os(0),
-                print_space,
-            );
+            Self::print_info(Self::os(0), print_space);
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(
-                Self::device(0),
-                print_space,
-            );
+            Self::print_info(Self::device(0), print_space);
+            count_of_info += 1;
+        }
+        if settings.kernel {
+            Self::print_info(Self::kernel(0), print_space);
+            count_of_info += 1;
+        }
+        if settings.uptime {
+            Self::print_info(Self::uptime(0), print_space);
             count_of_info += 1;
         }
 
@@ -115,12 +121,21 @@ impl System {
     fn os(info_space: size_t) -> CSTR {
         let result: [c_char; 100] = [0; 100];
         unsafe {
-            strcat(result.as_ptr() as *mut c_char, c_str("os: \0"));
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("os: \0"),
+            );
             for i in 0..info_space {
-                strcat(result.as_ptr() as *mut c_char, c_str(" \0"));
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
             }
             let os_name = Self::get_os_name();
-            strcat(result.as_ptr() as *mut c_char, c_str(&os_name[5..os_name.len()]));
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str(&os_name[5..os_name.len()]),
+            );
         }
 
         return result.as_ptr() as CSTR;
@@ -143,28 +158,147 @@ impl System {
         let result: [c_char; 200] = [0; 200];
         let name_str: [c_char; 100] = [0; 100];
         let version_str: [c_char; 100] = [0; 100];
-        
+
         unsafe {
-            strcat(result.as_ptr() as *mut c_char, c_str("host: \0"));
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("host: \0"),
+            );
             for i in 0..info_space {
-                strcat(result.as_ptr() as *mut c_char, c_str(" \0"));
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
             }
             fscanf(
                 name,
                 c_str("%s\n\0"),
                 name_str.as_ptr() as CSTR,
             );
-            strcat(result.as_ptr() as *mut c_char, name_str.as_ptr() as CSTR);
-            strcat(result.as_ptr() as *mut c_char, c_str(" \0"));
+            strcat(
+                result.as_ptr() as *mut c_char,
+                name_str.as_ptr() as CSTR,
+            );
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str(" \0"),
+            );
             fscanf(
                 version,
                 c_str("%s\n\0"),
                 version_str.as_ptr() as CSTR,
             );
-            strcat(result.as_ptr() as *mut c_char, version_str.as_ptr() as CSTR);
+            strcat(
+                result.as_ptr() as *mut c_char,
+                version_str.as_ptr() as CSTR,
+            );
         }
 
         return result.as_ptr() as CSTR;
+    }
+
+    fn kernel(info_space: size_t) -> CSTR {
+        let mut name = unsafe {
+            MaybeUninit::<utsname>::uninit().assume_init()
+        };
+        let result: [c_char; 100] = [0; 100];
+
+        unsafe {
+            uname(&mut name);
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("kernel: \0"),
+            );
+            for i in 0..info_space {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
+            }
+            strcat(
+                result.as_ptr() as *mut c_char,
+                name.release.as_ptr() as CSTR,
+            );
+        }
+
+        return result.as_ptr() as CSTR;
+    }
+
+    fn uptime(info_space: size_t) -> CSTR {
+        let mut sysinfo = unsafe {
+            MaybeUninit::<sysinfo_struct>::uninit()
+                .assume_init()
+        };
+
+        unsafe {
+            sysinfo_function(&mut sysinfo);
+        }
+
+        let uptime: u64 = sysinfo.uptime;
+
+        let updays: [c_char; 50] = [0; 50];
+        let uphours: [c_char; 50] = [0; 50];
+        let upmins: [c_char; 50] = [0; 50];
+
+        let result: [c_char; 150] = [0; 150];
+
+        unsafe {
+            sprintf(
+                updays.as_ptr() as *mut c_char,
+                c_str("%d\0"),
+                uptime / 86400,
+            );
+            sprintf(
+                uphours.as_ptr() as *mut c_char,
+                c_str("%d\0"),
+                uptime % 86400 / 3600,
+            );
+            sprintf(
+                upmins.as_ptr() as *mut c_char,
+                c_str("%d\0"),
+                uptime % 3600 / 60,
+            );
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("uptime: \0"),
+            );
+            for i in 0..info_space {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
+            }
+            if uptime / 86400 != 0 {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    updays.as_ptr() as CSTR,
+                );
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str("d \0"),
+                );
+            }
+            if uptime % 86400 / 3600 != 0 {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    uphours.as_ptr() as CSTR,
+                );
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str("h \0"),
+                );
+            }
+            strcat(
+                result.as_ptr() as *mut c_char,
+                upmins.as_ptr() as CSTR,
+            );
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("m\0"),
+            );
+        }
+
+        result.as_ptr() as CSTR
     }
 
     fn logo(&self) -> (CSTR, i32, i32) {
