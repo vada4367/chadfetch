@@ -15,49 +15,19 @@ use crate::fetch_info::FetchInfo;
 use crate::logos::*;
 use crate::os_names::*;
 
+use core::slice;
+
+
 #[derive(PartialEq)]
 pub enum System {
     Void,
     Unknown,
 }
 
-use core::slice;
 
 impl System {
     pub fn get_system() -> System {
-        let os_release;
-        unsafe {
-            os_release = fopen(
-                c_str("/etc/os-release\0"),
-                c_str("r\0"),
-            );
-        }
-        let os_name: [c_char; 32] = [0; 32];
-        let mut os_name_string = "\0";
-
-        unsafe {
-            fscanf(
-                os_release,
-                c_str("%s\n\0"),
-                os_name.as_ptr() as CSTR,
-            );
-            let os_name_slice = slice::from_raw_parts(
-                os_name.as_ptr() as *const u8,
-                32,
-            );
-
-            for sym in 0..32 {
-                if os_name_slice[sym] == 0 {
-                    os_name_string =
-                        core::str::from_utf8_unchecked(
-                            &os_name_slice[0..sym],
-                        );
-                    break;
-                }
-            }
-        }
-
-        match os_name_string {
+        match Self::get_os_name() {
             VOID_STR => return System::Void,
             _ => return System::Unknown,
         }
@@ -86,7 +56,7 @@ impl System {
         }
     }
 
-    pub fn user_host() -> *const i8 {
+    fn user_host() -> *const i8 {
         let user;
 
         unsafe {
@@ -108,7 +78,7 @@ impl System {
         user
     }
 
-    pub unsafe fn logo(&self) {
+    unsafe fn logo(&self) {
         let mut logo = " \0";
         match self {
             Self::Void => {
@@ -121,5 +91,39 @@ impl System {
             c_str("%s\n\0"),
             c_str(&logo[1..logo.len()]),
         );
+    }
+
+    fn get_os_name() -> &'static str {
+        let os_release;
+        unsafe {
+            os_release = fopen(
+                c_str("/etc/os-release\0"),
+                c_str("r\0"),
+            );
+        }
+        let os_name: [c_char; 32] = [0; 32];
+
+        unsafe {
+            fscanf(
+                os_release,
+                c_str("%s\n\0"),
+                os_name.as_ptr() as CSTR,
+            );
+            let os_name_slice = slice::from_raw_parts(
+                os_name.as_ptr() as *const u8,
+                32,
+            );
+
+            for sym in 0..32 {
+                if os_name_slice[sym] == 0 {
+                    return
+                        core::str::from_utf8_unchecked(
+                            &os_name_slice[0..sym],
+                        );
+                }
+            }
+
+            return "not_found\0";
+        }
     }
 }
