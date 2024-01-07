@@ -77,11 +77,11 @@ impl System {
             count_of_info += 1;
         }
         if settings.os {
-            Self::print_info(Self::os(0), print_space);
+            Self::print_info(Self::os(4), print_space);
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(Self::device(0), print_space);
+            Self::print_info(Self::device(2), print_space);
             count_of_info += 1;
         }
         if settings.kernel {
@@ -90,6 +90,10 @@ impl System {
         }
         if settings.uptime {
             Self::print_info(Self::uptime(0), print_space);
+            count_of_info += 1;
+        }
+        if settings.memory {
+            Self::print_info(Self::memory(0), print_space);
             count_of_info += 1;
         }
 
@@ -123,7 +127,7 @@ impl System {
         unsafe {
             strcat(
                 result.as_ptr() as *mut c_char,
-                c_str("os: \0"),
+                c_str("os \0"),
             );
             for i in 0..info_space {
                 strcat(
@@ -144,6 +148,7 @@ impl System {
     fn device(info_space: size_t) -> CSTR {
         let (name, version);
 
+
         unsafe {
             name = fopen(
                 c_str("/sys/devices/virtual/dmi/id/product_name\0"),
@@ -162,7 +167,7 @@ impl System {
         unsafe {
             strcat(
                 result.as_ptr() as *mut c_char,
-                c_str("host: \0"),
+                c_str("host \0"),
             );
             for i in 0..info_space {
                 strcat(
@@ -207,7 +212,7 @@ impl System {
             uname(&mut name);
             strcat(
                 result.as_ptr() as *mut c_char,
-                c_str("kernel: \0"),
+                c_str("kernel \0"),
             );
             for i in 0..info_space {
                 strcat(
@@ -260,7 +265,7 @@ impl System {
             );
             strcat(
                 result.as_ptr() as *mut c_char,
-                c_str("uptime: \0"),
+                c_str("uptime \0"),
             );
             for i in 0..info_space {
                 strcat(
@@ -295,6 +300,49 @@ impl System {
             strcat(
                 result.as_ptr() as *mut c_char,
                 c_str("m\0"),
+            );
+        }
+
+        result.as_ptr() as CSTR
+    }
+
+    fn memory(info_space: size_t) -> CSTR {
+        let mut sysinfo = unsafe {
+            MaybeUninit::<sysinfo_struct>::uninit()
+                .assume_init()
+        };
+
+        unsafe {
+            sysinfo_function(&mut sysinfo);
+        }
+
+        let memory: [c_char; 100] = [0; 100];
+        unsafe {
+            sprintf(
+                memory.as_ptr() as *mut c_char,
+                c_str("%dM / %dM\0"),
+                (sysinfo.freeram + sysinfo.bufferram - sysinfo.sharedram) / 1024 / 1024,
+                sysinfo.totalram / 1024 / 1024,
+            );
+        }
+
+        let result: [c_char; 100] = [0; 100];
+
+        unsafe {
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("memory \0"),
+            );
+
+            for i in 0..info_space {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
+            }
+            strcat(
+                result.as_ptr() as *mut c_char,
+                memory.as_ptr() as CSTR,
             );
         }
 

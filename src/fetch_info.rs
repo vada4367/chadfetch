@@ -6,4 +6,6 @@ pub struct FetchInfo {
     pub device: bool,
     pub kernel: bool,
     pub uptime: bool,
+    pub pkgs: bool,
+    pub memory: bool,
 }

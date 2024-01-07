@@ -22,6 +22,8 @@ fn main(_argc: *const *const i8, _argv: isize) -> isize {
         device: true,
         kernel: true,
         uptime: true,
+        pkgs: false,
+        memory: true,
     };
 
     system.print_fetch(settings);
