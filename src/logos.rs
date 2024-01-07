@@ -1,4 +1,5 @@
-pub const VOID_LOGO: &str = concat!(r#"
+pub const VOID_LOGO: &str = concat!(
+    r#"
     _______
  _ \______ -
 | \  ___  \ |
@@ -6,4 +7,6 @@ pub const VOID_LOGO: &str = concat!(r#"
 | | \___/ | |
 | \______ \_|
  -_______\
-"#, "\0");
+"#,
+    "\0"
+);

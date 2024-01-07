@@ -33,7 +33,6 @@ extern "C" {
     ) -> c_int;
 }
 
-
 #[panic_handler]
 fn panic_handler(_: &core::panic::PanicInfo<'_>) -> ! {
     loop {}
