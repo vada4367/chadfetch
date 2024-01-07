@@ -9,7 +9,7 @@ use crate::libc::{
     printf, strcat, CSTR,
 };
 
-use libc::c_char;
+use libc::{c_char, size_t};
 
 use crate::fetch_info::FetchInfo;
 use crate::logos::*;
@@ -33,28 +33,48 @@ impl System {
         }
     }
 
+
     pub fn print_fetch(&self, settings: FetchInfo) {
         unsafe {
+            let (mut _logo, mut _dx, mut dy) = (c_str("\0"), 0, 0);
             if settings.logo {
-                self.logo();
+                (_logo, _dx, dy) = self.logo();
+                printf(c_str("%s\n\0"), _logo);
             }
 
-            //printf(c_str("\x1B[6A\0"));
+            printf(c_str("\x1B[%dA\0"), dy + 1);
+            
+            dy -= self.print_all_info(settings);
 
-            if settings.user_host {
-                Self::print_info(Self::user_host());
-            }
-
-            //printf(c_str("\x1B[11B\0"));
+            printf(c_str("\x1B[%dB\0"), dy + 1);
         }
     }
 
-    fn print_info(info: CSTR) {
+
+    fn print_info(info: CSTR, space: size_t) {
         unsafe {
-            //printf(c_str("\x1B[10D"));
+            printf(c_str("\x1B[%dC\0"), space + 4);
             printf(c_str("%s\n\0"), info);
         }
     }
+
+
+    fn print_all_info(&self, settings: FetchInfo) -> i32 {
+        let (mut _logo, mut print_space, mut _dy_logo) = (c_str("\0"), 0, 0);
+        let mut count_of_info = 0;
+
+        if settings.logo {
+            (_logo, print_space, _dy_logo) = self.logo();
+        }
+
+        if settings.user_host {
+            Self::print_info(Self::user_host(), print_space);
+            count_of_info += 1;
+        }
+
+        count_of_info
+    }
+
 
     fn user_host() -> *const i8 {
         let user;
@@ -78,20 +98,25 @@ impl System {
         user
     }
 
-    unsafe fn logo(&self) {
+
+    fn logo(&self) -> (CSTR, usize, i32) {
         let mut logo = " \0";
+        let mut dx = 0;
+        let mut dy = 0;
+
         match self {
             Self::Void => {
                 logo = VOID_LOGO;
+                dx = 13;
+                dy = 7;
             }
             _ => {}
         }
 
-        printf(
-            c_str("%s\n\0"),
-            c_str(&logo[1..logo.len()]),
-        );
+
+        (c_str(&logo[1..logo.len()]), dx, dy)
     }
+
 
     fn get_os_name() -> &'static str {
         let os_release;
