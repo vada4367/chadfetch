@@ -19,23 +19,22 @@ pub fn c_str(string: &str) -> CSTR {
 extern "C" {
     pub fn printf(format: CSTR, ...) -> c_int;
     pub fn fopen(filename: CSTR, mode: CSTR) -> *mut FILE;
-    pub fn getline(
-        lineptr: *mut *mut c_char,
-        n: *mut size_t,
+    pub fn fscanf(
         stream: *mut FILE,
-    );
+        format: CSTR,
+        ...
+    ) -> c_int;
     pub fn geteuid() -> uid_t;
     pub fn getpwuid(uid: uid_t) -> *mut passwd;
-    pub fn strcat(s: *mut c_char, ct: *const c_char);
+    pub fn strcat(s: *mut c_char, ct: CSTR);
     pub fn gethostname(
         name: *mut c_char,
         len: size_t,
     ) -> c_int;
 }
-
+/*
 #[panic_handler]
 fn panic_handler(_: &core::panic::PanicInfo<'_>) -> ! {
     loop {}
 }
-
-
+*/

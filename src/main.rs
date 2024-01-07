@@ -1,4 +1,4 @@
-#![no_std]
+//#![no_std]
 #![no_main]
 
 mod libc;
@@ -19,6 +19,7 @@ fn main(_argc: *const *const i8, _argv: isize) -> isize {
         logo: true,
         user_host: true,
     };
+
     system.print_fetch(settings);
 
     return 0isize;
