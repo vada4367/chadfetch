@@ -2,6 +2,7 @@
 #![no_main]
 
 mod libc;
+use libc::CSTR;
 
 mod system;
 use crate::system::System;
@@ -13,7 +14,7 @@ mod logos;
 mod os_names;
 
 #[no_mangle]
-fn main(_argc: *const *const i8, _argv: isize) -> isize {
+fn main(_argc: *const CSTR, _argv: isize) -> isize {
     let system = System::get_system();
     let settings = FetchInfo {
         logo: true,
