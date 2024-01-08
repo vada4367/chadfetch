@@ -79,28 +79,30 @@ impl System {
             );
             count_of_info += 1;
         }
+    
+        let max_length = settings.max_length();
         if settings.os {
-            Self::print_info(Self::os(4), print_space);
+            Self::print_info(Self::os(max_length - 2), print_space);
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(Self::device(2), print_space);
+            Self::print_info(Self::device(max_length - 4), print_space);
             count_of_info += 1;
         }
         if settings.kernel {
-            Self::print_info(Self::kernel(0), print_space);
+            Self::print_info(Self::kernel(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.uptime {
-            Self::print_info(Self::uptime(0), print_space);
+            Self::print_info(Self::uptime(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.pkgs {
-            Self::print_info(Self::pkgs(1), print_space);
+            Self::print_info(Self::pkgs(max_length - 4), print_space);
             count_of_info += 1;
         }
         if settings.memory {
-            Self::print_info(Self::memory(0), print_space);
+            Self::print_info(Self::memory(max_length - 6), print_space);
             count_of_info += 1;
         }
 
@@ -423,7 +425,7 @@ impl System {
         unsafe {
             strcat(
                 result.as_ptr() as *mut c_char,
-                c_str("pkgs: \0"),
+                c_str("pkgs \0"),
             );
             for i in 0..info_space {
                 strcat(
