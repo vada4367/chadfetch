@@ -18,7 +18,6 @@ pub fn c_str<T: ?Sized>(string: &T) -> CSTR {
     return string as *const T as CSTR;
 }
 
-#[cfg(target_os = "linux")]
 #[link(name = "c")]
 extern "C" {
     pub fn printf(format: CSTR, ...) -> c_int;
