@@ -7,8 +7,9 @@
 //
 
 use libc::{
-    c_char, c_int, passwd, size_t,
-    sysinfo as sysinfo_struct, uid_t, utsname, FILE,
+    c_char, c_int, c_void, glob_t, passwd, size_t,
+    stat as stat_struct, sysinfo as sysinfo_struct, uid_t,
+    utsname, FILE,
 };
 
 pub type CSTR = *const c_char;
@@ -41,6 +42,33 @@ extern "C" {
         format: *const c_char,
         ...
     ) -> c_int;
+    pub fn strcpy(
+        dst: *mut c_char,
+        src: CSTR,
+    ) -> *mut c_char;
+    pub fn strchr(cs: CSTR, c: c_int) -> *mut c_char;
+    pub fn strlen(cs: CSTR) -> size_t;
+    pub fn strstr(cs: CSTR, ct: CSTR) -> *mut c_char;
+    pub fn fread(
+        ptr: *mut c_void,
+        size: size_t,
+        nobj: size_t,
+        stream: *mut FILE,
+    ) -> size_t;
+    pub fn malloc(size: size_t) -> *mut c_void;
+    pub fn glob(
+        patter: CSTR,
+        flags: c_int,
+        errfunc: Option<
+            extern "C" fn(
+                epath: CSTR,
+                errno: c_int,
+            ) -> c_int,
+        >,
+        pglob: *mut glob_t,
+    ) -> c_int;
+    pub fn stat(path: CSTR, buf: *mut stat_struct)
+        -> c_int;
 }
 
 #[panic_handler]

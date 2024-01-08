@@ -22,7 +22,7 @@ fn main(_argc: *const *const i8, _argv: isize) -> isize {
         device: true,
         kernel: true,
         uptime: true,
-        pkgs: false,
+        pkgs: true,
         memory: true,
     };
 

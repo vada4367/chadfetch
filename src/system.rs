@@ -6,13 +6,16 @@
 )]
 
 use crate::libc::{
-    c_str, fopen, fscanf, geteuid, gethostname, getpwuid,
-    printf, sprintf, strcat, sysinfo as sysinfo_function,
-    uname, CSTR,
+    c_str, fopen, fread, fscanf, geteuid, gethostname,
+    getpwuid, glob, malloc, printf, sprintf,
+    stat as stat_func, strcat, strchr, strcpy, strlen,
+    strstr, sysinfo as sysinfo_function, uname, CSTR,
 };
 
 use libc::{
-    c_char, size_t, sysinfo as sysinfo_struct, utsname,
+    c_char, c_int, c_void, glob_t, size_t,
+    stat as stat_struct, sysinfo as sysinfo_struct,
+    utsname,
 };
 
 use crate::fetch_info::FetchInfo;
@@ -92,6 +95,10 @@ impl System {
             Self::print_info(Self::uptime(0), print_space);
             count_of_info += 1;
         }
+        if settings.pkgs {
+            Self::print_info(Self::pkgs(1), print_space);
+            count_of_info += 1;
+        }
         if settings.memory {
             Self::print_info(Self::memory(0), print_space);
             count_of_info += 1;
@@ -142,12 +149,23 @@ impl System {
             );
         }
 
+        let mut p: CSTR = result.as_ptr() as CSTR;
+
+        loop {
+            unsafe {
+                p = strchr(p, 34 as c_int);
+                if p == core::ptr::null() {
+                    break;
+                }
+                strcpy(p as *mut c_char, p.add(1));
+            }
+        }
+
         return result.as_ptr() as CSTR;
     }
 
     fn device(info_space: size_t) -> CSTR {
         let (name, version);
-
 
         unsafe {
             name = fopen(
@@ -321,7 +339,9 @@ impl System {
             sprintf(
                 memory.as_ptr() as *mut c_char,
                 c_str("%dM / %dM\0"),
-                (sysinfo.freeram + sysinfo.bufferram - sysinfo.sharedram) / 1024 / 1024,
+                (sysinfo.totalram - sysinfo.freeram)
+                    / 1024
+                    / 1024,
                 sysinfo.totalram / 1024 / 1024,
             );
         }
@@ -343,6 +363,83 @@ impl System {
             strcat(
                 result.as_ptr() as *mut c_char,
                 memory.as_ptr() as CSTR,
+            );
+        }
+
+        result.as_ptr() as CSTR
+    }
+
+    fn pkgs(info_space: size_t) -> CSTR {
+        let mut glob_var = unsafe {
+            MaybeUninit::<libc::glob_t>::uninit()
+                .assume_init() };
+        let fname;
+        unsafe {
+            glob(
+                c_str("/var/db/xbps/pkgdb-*\0"),
+                0,
+                None,
+                &mut glob_var,
+            );
+        }
+        let paths = unsafe { slice::from_raw_parts(
+            glob_var.gl_pathv,
+            glob_var.gl_pathc as size_t,
+        ) };
+        if paths.len() == 1 {
+            fname = paths[0] as CSTR;
+        } else {
+            return c_str("\0");
+        }
+
+        let installed_string =
+            c_str("<string>installed</string>\0");
+        let f = unsafe { fopen(fname, c_str("rb\0")) };
+        let mut stat = unsafe { MaybeUninit::<stat_struct>::uninit()
+            .assume_init() };
+        unsafe {
+            stat_func(fname, &mut stat);
+        }
+
+        let mut raw_file = unsafe { malloc(stat.st_size as usize) };
+        unsafe {
+            fread(raw_file, 1, stat.st_size as size_t, f);
+        }
+
+        let mut count = 0;
+        loop {
+            raw_file = unsafe {
+                strstr(raw_file as CSTR, installed_string)
+                    as *mut c_void };
+            if raw_file == core::ptr::null_mut() {
+                break;
+            }
+            count += 1;
+            raw_file = unsafe {
+                raw_file.add(strlen(installed_string)) };
+        }
+
+        let result: [c_char; 100] = [0; 100];
+        unsafe {
+            strcat(
+                result.as_ptr() as *mut c_char,
+                c_str("pkgs: \0"),
+            );
+            for i in 0..info_space {
+                strcat(
+                    result.as_ptr() as *mut c_char,
+                    c_str(" \0"),
+                );
+            }
+            let pkgs: [c_char; 100] = [0; 100];
+            sprintf(
+                pkgs.as_ptr() as *mut c_char,
+                c_str("%d\0"),
+                count,
+            );
+            strcat(
+                result.as_ptr() as *mut c_char,
+                pkgs.as_ptr() as CSTR,
             );
         }
 
