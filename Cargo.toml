@@ -6,10 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.release]
-panic = "abort"
+debug = false
+strip = true
+opt-level = 's'
+codegen-units = 1
+lto = true
+panic = 'abort'
+
 
 [profile.dev]
-panic = "abort"
+opt-level = 's'
+lto = true
+panic = 'abort'
 
 
 [dependencies]
