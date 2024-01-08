@@ -79,30 +79,48 @@ impl System {
             );
             count_of_info += 1;
         }
-    
+
         let max_length = settings.max_length();
         if settings.os {
-            Self::print_info(Self::os(max_length - 2), print_space);
+            Self::print_info(
+                Self::os(max_length - 2),
+                print_space,
+            );
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(Self::device(max_length - 4), print_space);
+            Self::print_info(
+                Self::device(max_length - 4),
+                print_space,
+            );
             count_of_info += 1;
         }
         if settings.kernel {
-            Self::print_info(Self::kernel(max_length - 6), print_space);
+            Self::print_info(
+                Self::kernel(max_length - 6),
+                print_space,
+            );
             count_of_info += 1;
         }
         if settings.uptime {
-            Self::print_info(Self::uptime(max_length - 6), print_space);
+            Self::print_info(
+                Self::uptime(max_length - 6),
+                print_space,
+            );
             count_of_info += 1;
         }
         if settings.pkgs {
-            Self::print_info(Self::pkgs(max_length - 4), print_space);
+            Self::print_info(
+                Self::pkgs(max_length - 4),
+                print_space,
+            );
             count_of_info += 1;
         }
         if settings.memory {
-            Self::print_info(Self::memory(max_length - 6), print_space);
+            Self::print_info(
+                Self::memory(max_length - 6),
+                print_space,
+            );
             count_of_info += 1;
         }
 
@@ -374,7 +392,8 @@ impl System {
     fn pkgs(info_space: size_t) -> CSTR {
         let mut glob_var = unsafe {
             MaybeUninit::<libc::glob_t>::uninit()
-                .assume_init() };
+                .assume_init()
+        };
         let fname;
         unsafe {
             glob(
@@ -384,10 +403,12 @@ impl System {
                 &mut glob_var,
             );
         }
-        let paths = unsafe { slice::from_raw_parts(
-            glob_var.gl_pathv,
-            glob_var.gl_pathc as size_t,
-        ) };
+        let paths = unsafe {
+            slice::from_raw_parts(
+                glob_var.gl_pathv,
+                glob_var.gl_pathc as size_t,
+            )
+        };
         if paths.len() == 1 {
             fname = paths[0] as CSTR;
         } else {
@@ -397,13 +418,16 @@ impl System {
         let installed_string =
             c_str("<string>installed</string>\0");
         let f = unsafe { fopen(fname, c_str("rb\0")) };
-        let mut stat = unsafe { MaybeUninit::<stat_struct>::uninit()
-            .assume_init() };
+        let mut stat = unsafe {
+            MaybeUninit::<stat_struct>::uninit()
+                .assume_init()
+        };
         unsafe {
             stat_func(fname, &mut stat);
         }
 
-        let mut raw_file = unsafe { malloc(stat.st_size as usize) };
+        let mut raw_file =
+            unsafe { malloc(stat.st_size as usize) };
         unsafe {
             fread(raw_file, 1, stat.st_size as size_t, f);
         }
@@ -412,13 +436,15 @@ impl System {
         loop {
             raw_file = unsafe {
                 strstr(raw_file as CSTR, installed_string)
-                    as *mut c_void };
+                    as *mut c_void
+            };
             if raw_file == core::ptr::null_mut() {
                 break;
             }
             count += 1;
             raw_file = unsafe {
-                raw_file.add(strlen(installed_string)) };
+                raw_file.add(strlen(installed_string))
+            };
         }
 
         let result: [c_char; 100] = [0; 100];
