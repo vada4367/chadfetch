@@ -139,8 +139,8 @@ impl System {
 
     fn user_host() -> CSTR {
         let user = unsafe { (*getpwuid(geteuid())).pw_name };
-        let hostname: *mut c_char =
-            unsafe { malloc(40) } as *mut c_char;
+        let hostname = unsafe { malloc(40) } as *mut c_char;
+
         let result: [c_char; LEN_STRING] = [0; LEN_STRING];
 
         unsafe {
@@ -157,7 +157,7 @@ impl System {
     }
 
     fn os(info_space: size_t) -> CSTR {
-        let result: [c_char; LEN_STRING] = [0; LEN_STRING];
+        let result = [0; LEN_STRING];
         unsafe {
             let spaces_str = malloc(info_space) as *mut c_char;
             core::ptr::write_bytes(spaces_str, 0x20, info_space);
@@ -202,9 +202,9 @@ impl System {
             );
         }
 
-        let result: [c_char; LEN_STRING] = [0; LEN_STRING];
-        let name_str: [c_char; LEN_STRING] = [0; LEN_STRING];
-        let version_str: [c_char; LEN_STRING] = [0; LEN_STRING];
+        let result = [0; LEN_STRING];
+        let name_str = [0; LEN_STRING];
+        let version_str = [0; LEN_STRING];
 
         unsafe {
             let spaces_str = malloc(info_space) as *mut c_char;
@@ -227,7 +227,7 @@ impl System {
         let mut name = unsafe {
             MaybeUninit::<utsname>::uninit().assume_init()
         };
-        let result: [c_char; LEN_STRING] = [0; LEN_STRING];
+        let result = [0; LEN_STRING];
 
         unsafe {
             uname(&mut name);
@@ -255,12 +255,11 @@ impl System {
 
         let uptime = sysinfo.uptime;
 
-        let updays: [c_char; LEN_STRING + 64] = [0; LEN_STRING + 64];
-        let uphours: [c_char; LEN_STRING + 5] = [0; LEN_STRING + 5];
-        let upmins: [c_char; LEN_STRING + 5] = [0; LEN_STRING + 5];
+        let updays = [0; LEN_STRING + 64];
+        let uphours = [0; LEN_STRING + 5];
+        let upmins = [0; LEN_STRING + 5];
 
-        let result: [c_char; LEN_STRING + 100] =
-            [0; LEN_STRING + 100];
+        let result = [0; LEN_STRING + 100];
 
         unsafe {
             sprintf(
@@ -309,15 +308,21 @@ impl System {
 
         let mut line = [0; LEN_STRING + 30];
 
-        let mut mem_total = 0;
         let mem_available;
-        let mut sh_mem = 0;
-        let mut mem_free = 0;
-        let mut buffers = 0;
-        let mut cached = 0;
-        let mut s_reclaimable = 0;
+        let mut mem_total = 0;
+        let mut sh_mem = 1;
+        let mut mem_free = 1;
+        let mut buffers = 1;
+        let mut cached = 1;
+        let mut s_reclaimable = 1;
 
-        loop {
+        while mem_total == 0
+            && mem_free == 0
+            && buffers == 0
+            && cached == 0
+            && s_reclaimable == 0
+            && sh_mem == 0
+        {
             unsafe {
                 let fgets_line = fgets(
                     line.as_mut_ptr(),
@@ -325,19 +330,22 @@ impl System {
                     file,
                 );
 
+                /*
                 let line_str = core::str::from_utf8_unchecked(
                     slice::from_raw_parts(
                         c_str(&line) as *const u8,
                         strlen(c_str(&line)),
                     ),
                 );
-                if line_str.find("MemTotal").is_some() {
+                */
+                if strstr(c_str(&line), c_str("MemTotal\0")) != core::ptr::null_mut() {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("MemTotal: %d\0"),
                         &mut mem_total,
                     );
                 }
+                /*
                 if line_str.find("MemFree").is_some() {
                     sscanf(
                         line.as_ptr() as CSTR,
@@ -373,26 +381,21 @@ impl System {
                         &mut sh_mem,
                     );
                 }
-                if mem_total != 0
-                    && mem_free != 0
-                    && buffers != 0
-                    && cached != 0
-                    && s_reclaimable != 0
-                    && sh_mem != 0
-                {
-                    break;
-                }
+                */
             }
         }
 
         mem_available =
             mem_free + buffers + cached + s_reclaimable - sh_mem;
+
         let result = [0; LEN_STRING];
-        let spaces_str =
-            unsafe { malloc(info_space) as *mut c_char };
+        let spaces_str;
+
         unsafe {
+            spaces_str = malloc(info_space) as *mut c_char;
             core::ptr::write_bytes(spaces_str, 0x20, info_space);
             strcat(result.as_ptr() as *mut c_char, spaces_str);
+
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("memory %s%dM / %dM\0"),
@@ -434,8 +437,10 @@ impl System {
         let mut raw_file;
         unsafe {
             let f = fopen(fname, c_str("r\0"));
+
             let mut stat =
                 MaybeUninit::<stat_struct>::uninit().assume_init();
+
             stat_func(fname, &mut stat);
             raw_file = malloc(stat.st_size as usize);
             fread(raw_file, 1, stat.st_size as size_t, f);
@@ -501,13 +506,10 @@ impl System {
     }
 
     fn get_os_name() -> &'static str {
-        let os_release;
-        unsafe {
-            os_release =
-                fopen(c_str("/etc/os-release\0"), c_str("r\0"));
-        }
-        let os_name: [c_char; LEN_STRING + 40] =
-            [0; LEN_STRING + 40];
+        let os_release = unsafe {
+            fopen(c_str("/etc/os-release\0"), c_str("r\0"))
+        };
+        let os_name = [0; LEN_STRING + 40];
 
         unsafe {
             fscanf(os_release, c_str("%s\n\0"), c_str(&os_name));
