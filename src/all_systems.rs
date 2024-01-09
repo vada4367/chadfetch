@@ -15,7 +15,7 @@ pub struct Logo<'a> {
     pub h: size_t,
 }
 
-#[derive(Clone, Copy, )]
+#[derive(Clone, Copy)]
 pub struct SystemFormat<'a> {
     pub os: OS,
     pub logo: Logo<'a>,
@@ -24,7 +24,14 @@ pub struct SystemFormat<'a> {
 }
 
 impl SystemFormat<'_> {
-    const fn new(os: OS, logo: &'static str, w: size_t, h: size_t, name: &'static str, id: usize) -> Self {
+    const fn new(
+        os: OS,
+        logo: &'static str,
+        w: size_t,
+        h: size_t,
+        name: &'static str,
+        id: usize,
+    ) -> Self {
         SystemFormat {
             os: os,
             logo: Logo {
@@ -38,11 +45,10 @@ impl SystemFormat<'_> {
     }
 }
 
-pub static ALL_SYSTEMS: [SystemFormat<'_>; 1] = [
-    SystemFormat::new(
-        OS::Linux,
-        concat!(
-r#"
+pub static ALL_SYSTEMS: [SystemFormat<'_>; 1] = [SystemFormat::new(
+    OS::Linux,
+    concat!(
+        r#"
     _______
  _ \______ -
 | \  ___  \ |
@@ -50,11 +56,11 @@ r#"
 | | \___/ | |
 | \______ \_|
  -_______\
-"#, "\0"),
-        13,
-        7,
-        "Void\0",
-        0,
+"#,
+        "\0"
     ),
-];
-
+    13,
+    7,
+    "Void\0",
+    0,
+)];
