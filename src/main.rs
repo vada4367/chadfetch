@@ -4,18 +4,17 @@
 mod libc;
 use libc::CSTR;
 
-mod system;
-use crate::system::System;
+mod all_systems;
+use crate::all_systems::SystemFormat;
+
+mod get_info;
 
 mod fetch_info;
 use fetch_info::FetchInfo;
 
-mod logos;
-mod os_names;
-
 #[no_mangle]
 fn main(_argc: *const CSTR, _argv: isize) -> isize {
-    let system = System::get_system();
+    let system = SystemFormat::get_system();
     let settings = FetchInfo {
         logo: true,
         user_host: true,

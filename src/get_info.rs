@@ -18,35 +18,46 @@ use libc::{
 };
 
 use crate::fetch_info::FetchInfo;
-use crate::logos::*;
-use crate::os_names::*;
 
 use core::mem::MaybeUninit;
 use core::slice;
 
-#[derive(PartialEq)]
-pub enum System {
-    Void,
-    Unknown,
-}
+use crate::all_systems::ALL_SYSTEMS;
+use crate::all_systems::SystemFormat;
 
 const LEN_STRING: usize = 1;
 
-impl System {
-    pub fn get_system() -> System {
-        match Self::get_os_name() {
-            VOID_STR => return System::Void,
-            _ => return System::Unknown,
+impl SystemFormat<'_> {
+    pub fn get_system() -> Self {
+        let os_name = c_str(&Self::get_os_name()[5..Self::get_os_name().len()]);
+
+        // DELETE ALL "
+        let mut p = c_str(&os_name);
+        loop {
+            // 34 IS "
+            p = unsafe { strchr(p, 34 as c_int) };
+            if p == core::ptr::null() {
+                break;
+            }
+            unsafe { strcpy(p as *mut c_char, p.add(1)) };
         }
+
+        for system in ALL_SYSTEMS {
+            if c_str(system.name) == os_name {
+                return system;
+            }
+        }
+
+        return ALL_SYSTEMS[0];
     }
 
     pub fn print_fetch(&self, settings: FetchInfo) {
         unsafe {
-            let (mut _logo, mut _dx, mut dy) = (c_str("\0"), -4, -2);
+            let mut dy = -2;
 
             if settings.logo {
-                (_logo, _dx, dy) = self.logo();
-                printf(c_str("%s\n\0"), _logo);
+                dy = self.logo.h as i32;
+                printf(c_str("%s\n\0"), self.logo.logo);
             }
 
             // MOVE THE CURSOR TO
@@ -74,19 +85,18 @@ impl System {
     }
 
     fn print_all_info(&self, settings: FetchInfo) -> i32 {
-        let (mut _logo, mut print_space, mut _dy_logo) =
-            (c_str("\0"), -4, -2);
+        let mut print_space = -4;
+
+        if settings.logo {
+            print_space = self.logo.w as i32;
+        }
 
         // THIS VAR NEEDS TO MOVE CURSOR
         // TO THE END OF OUTPUT
         let mut count_of_info = 0;
 
-        if settings.logo {
-            (_logo, print_space, _dy_logo) = self.logo();
-        }
-
         if settings.user_host {
-            Self::print_info(Self::user_host(), print_space);
+            Self::print_info(self.user_host(), print_space);
             count_of_info += 1;
         }
 
@@ -95,40 +105,40 @@ impl System {
         let max_length = settings.max_length();
 
         if settings.os {
-            Self::print_info(Self::os(max_length - 2), print_space);
+            Self::print_info(self.os(max_length - 2), print_space);
             count_of_info += 1;
         }
         if settings.device {
             Self::print_info(
-                Self::device(max_length - 4),
+                self.device(max_length - 4),
                 print_space,
             );
             count_of_info += 1;
         }
         if settings.kernel {
             Self::print_info(
-                Self::kernel(max_length - 6),
+                self.kernel(max_length - 6),
                 print_space,
             );
             count_of_info += 1;
         }
         if settings.uptime {
             Self::print_info(
-                Self::uptime(max_length - 6),
+                self.uptime(max_length - 6),
                 print_space,
             );
             count_of_info += 1;
         }
         if settings.pkgs {
             Self::print_info(
-                Self::pkgs(max_length - 4),
+                self.pkgs(max_length - 4),
                 print_space,
             );
             count_of_info += 1;
         }
         if settings.memory {
             Self::print_info(
-                Self::memory(max_length - 6),
+                self.memory(max_length - 6),
                 print_space,
             );
             count_of_info += 1;
@@ -137,7 +147,7 @@ impl System {
         count_of_info
     }
 
-    fn user_host() -> CSTR {
+    fn user_host(&self) -> CSTR {
         let user = unsafe { (*getpwuid(geteuid())).pw_name };
         let hostname = unsafe { malloc(40) } as *mut c_char;
 
@@ -156,37 +166,24 @@ impl System {
         c_str(&result)
     }
 
-    fn os(info_space: size_t) -> CSTR {
+    fn os(&self, info_space: size_t) -> CSTR {
         let result = [0; LEN_STRING];
         unsafe {
             let spaces_str = malloc(info_space) as *mut c_char;
             core::ptr::write_bytes(spaces_str, 0x20, info_space);
-            let os_name = Self::get_os_name();
 
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("os %s%s\0"),
                 spaces_str,
-                c_str(&os_name[5..os_name.len()]),
+                c_str(self.name),
             );
-        }
-
-        // DELETE ALL "
-        let mut p = c_str(&result);
-
-        loop {
-            // 34 IS "
-            p = unsafe { strchr(p, 34 as c_int) };
-            if p == core::ptr::null() {
-                break;
-            }
-            unsafe { strcpy(p as *mut c_char, p.add(1)) };
         }
 
         c_str(&result)
     }
 
-    fn device(info_space: size_t) -> CSTR {
+    fn device(&self, info_space: size_t) -> CSTR {
         let (name, version);
 
         unsafe {
@@ -237,7 +234,7 @@ impl System {
         c_str(&result)
     }
 
-    fn kernel(info_space: size_t) -> CSTR {
+    fn kernel(&self, info_space: size_t) -> CSTR {
         let mut name = unsafe {
             MaybeUninit::<utsname>::uninit().assume_init()
         };
@@ -258,7 +255,7 @@ impl System {
         c_str(&result)
     }
 
-    fn uptime(info_space: size_t) -> CSTR {
+    fn uptime(&self, info_space: size_t) -> CSTR {
         let mut sysinfo = unsafe {
             MaybeUninit::<sysinfo_struct>::uninit().assume_init()
         };
@@ -316,7 +313,7 @@ impl System {
         c_str(&result)
     }
 
-    fn memory(info_space: size_t) -> CSTR {
+    fn memory(&self, info_space: size_t) -> CSTR {
         let file =
             unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
@@ -499,7 +496,7 @@ impl System {
         count
     }
 
-    fn pkgs(info_space: size_t) -> CSTR {
+    fn pkgs(&self, info_space: size_t) -> CSTR {
         let mut distro_pkgs = 0;
 
         let xbps_pkgs = Self::xbps();
@@ -523,23 +520,6 @@ impl System {
         }
 
         c_str(&result)
-    }
-
-    fn logo(&self) -> (CSTR, i32, i32) {
-        let mut logo = " \0";
-        let mut dx = 0;
-        let mut dy = 0;
-
-        match self {
-            Self::Void => {
-                logo = VOID_LOGO;
-                dx = 13;
-                dy = 7;
-            }
-            _ => {}
-        }
-
-        (c_str(&logo[1..logo.len()]), dx, dy)
     }
 
     fn get_os_name() -> &'static str {
