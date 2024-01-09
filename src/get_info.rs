@@ -13,7 +13,7 @@ use crate::libc::{
 };
 
 use libc::{
-    c_char, c_int, c_void, glob_t, size_t, sscanf, 
+    c_char, c_int, c_void, glob_t, size_t, sscanf,
     stat as stat_struct, sysinfo as sysinfo_struct, utsname,
 };
 
@@ -44,7 +44,16 @@ impl SystemFormat<'_> {
         }
 
         for system in ALL_SYSTEMS {
-            if system.name == unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(os_name as *const u8, strlen(os_name) + 1)) } {
+            if system.name
+                == unsafe {
+                    core::str::from_utf8_unchecked(
+                        slice::from_raw_parts(
+                            os_name as *const u8,
+                            strlen(os_name) + 1,
+                        ),
+                    )
+                }
+            {
                 return system;
             }
         }
@@ -226,4 +235,3 @@ impl SystemFormat<'_> {
         return linux::get_os_name();
     }
 }
-

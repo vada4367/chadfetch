@@ -384,8 +384,11 @@ pub fn get_os_name() -> &'static str {
     let os_name_str = unsafe { malloc(40) } as *mut c_char;
 
     unsafe {
-        let fgets_line =
-            fgets(os_name.as_mut_ptr(), os_name.len() as c_int, os_release);
+        let fgets_line = fgets(
+            os_name.as_mut_ptr(),
+            os_name.len() as c_int,
+            os_release,
+        );
 
         if strstr(c_str(&os_name), c_str("NAME\0"))
             != core::ptr::null_mut()
@@ -397,6 +400,10 @@ pub fn get_os_name() -> &'static str {
             );
         }
     }
-    return unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(
-        os_name_str as *const u8, strlen(os_name_str as CSTR) + 1)) };
+    return unsafe {
+        core::str::from_utf8_unchecked(slice::from_raw_parts(
+            os_name_str as *const u8,
+            strlen(os_name_str as CSTR) + 1,
+        ))
+    };
 }

@@ -50,4 +50,3 @@ pub const VOID_LOGO: Logo<'_> = Logo::new(
     13,
     7,
 );
-
