@@ -380,23 +380,23 @@ pub fn get_os_name() -> &'static str {
         return "unknown\0";
     }
 
-    let os_name = [0; LEN_STRING + 40];
+    let mut os_name = [0; LEN_STRING + 40];
+    let os_name_str = unsafe { malloc(40) } as *mut c_char;
 
     unsafe {
-        fscanf(os_release, c_str("%s\n\0"), c_str(&os_name));
-        let os_name_slice = slice::from_raw_parts(
-            os_name.as_ptr() as *const u8,
-            LEN_STRING + 40,
-        );
+        let fgets_line =
+            fgets(os_name.as_mut_ptr(), os_name.len() as c_int, os_release);
 
-        for sym in 0..LEN_STRING + 40 {
-            if os_name_slice[sym] == 0 {
-                return core::str::from_utf8_unchecked(
-                    &os_name_slice[0..sym],
-                );
-            }
+        if strstr(c_str(&os_name), c_str("NAME\0"))
+            != core::ptr::null_mut()
+        {
+            sscanf(
+                os_name.as_ptr() as CSTR,
+                c_str("NAME=\"%s\"\0"),
+                os_name_str,
+            );
         }
-
-        return "not_found\0";
     }
+    return unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(
+        os_name_str as *const u8, strlen(os_name_str as CSTR) + 1)) };
 }

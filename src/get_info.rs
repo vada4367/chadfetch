@@ -13,7 +13,7 @@ use crate::libc::{
 };
 
 use libc::{
-    c_char, c_int, c_void, glob_t, size_t, sscanf,
+    c_char, c_int, c_void, glob_t, size_t, sscanf, 
     stat as stat_struct, sysinfo as sysinfo_struct, utsname,
 };
 
@@ -30,12 +30,10 @@ const LEN_STRING: usize = 1;
 
 impl SystemFormat<'_> {
     pub fn get_system() -> Self {
-        let os_name = c_str(
-            &Self::get_os_name()[5..Self::get_os_name().len()],
-        );
+        let os_name = Self::get_os_name().as_ptr() as CSTR;
 
         // DELETE ALL "
-        let mut p = c_str(&os_name);
+        let mut p = os_name;
         loop {
             // 34 IS "
             p = unsafe { strchr(p, 34 as c_int) };
@@ -46,7 +44,7 @@ impl SystemFormat<'_> {
         }
 
         for system in ALL_SYSTEMS {
-            if c_str(system.name) == os_name {
+            if system.name == unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(os_name as *const u8, strlen(os_name) + 1)) } {
                 return system;
             }
         }
@@ -228,3 +226,4 @@ impl SystemFormat<'_> {
         return linux::get_os_name();
     }
 }
+

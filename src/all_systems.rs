@@ -32,5 +32,6 @@ impl SystemFormat<'_> {
     }
 }
 
-pub const ALL_SYSTEMS: [SystemFormat<'_>; 1] =
-    [SystemFormat::new(OS::Linux, VOID_LOGO, "Void\0", 0)];
+pub const ALL_SYSTEMS: [SystemFormat<'_>; 2] =
+    [SystemFormat::new(OS::Linux, UNKNOWN_LOGO, "Unknown\0", 0),
+    SystemFormat::new(OS::Linux, VOID_LOGO, "Void\0", 0)];
