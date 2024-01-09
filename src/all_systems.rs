@@ -17,12 +17,7 @@ pub struct SystemFormat<'a> {
 }
 
 impl SystemFormat<'_> {
-    const fn new<'a>(
-        os: OS,
-        logo: Logo<'a>,
-        name: &'static str,
-        id: usize,
-    ) -> SystemFormat<'a> {
+    const fn new<'a>(os: OS, logo: Logo<'a>, name: &'static str, id: usize) -> SystemFormat<'a> {
         SystemFormat {
             os: os,
             logo: logo,

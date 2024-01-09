@@ -1,20 +1,13 @@
-#![allow(
-    unreachable_patterns,
-    unused_variables,
-    unused_imports,
-    invalid_value
-)]
+#![allow(unreachable_patterns, unused_variables, unused_imports, invalid_value)]
 
 use crate::libc::{
-    c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
-    getpwuid, glob, malloc, printf, sprintf, stat as stat_func,
-    strcat, strchr, strcpy, strlen, strstr,
+    c_str, fgets, fopen, fread, fscanf, geteuid, gethostname, getpwuid, malloc, opendir, printf,
+    readdir, sprintf, stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
     sysinfo as sysinfo_function, uname, CSTR,
 };
 
 use libc::{
-    c_char, c_int, c_void, glob_t, size_t, sscanf,
-    stat as stat_struct, sysinfo as sysinfo_struct, utsname,
+    c_char, c_int, c_void, size_t, sscanf, stat as stat_struct, sysinfo as sysinfo_struct, utsname,
 };
 
 use crate::fetch_info::FetchInfo;
@@ -46,12 +39,10 @@ impl SystemFormat<'_> {
         for system in ALL_SYSTEMS {
             if system.name
                 == unsafe {
-                    core::str::from_utf8_unchecked(
-                        slice::from_raw_parts(
-                            os_name as *const u8,
-                            strlen(os_name) + 1,
-                        ),
-                    )
+                    core::str::from_utf8_unchecked(slice::from_raw_parts(
+                        os_name as *const u8,
+                        strlen(os_name) + 1,
+                    ))
                 }
             {
                 return system;
@@ -119,24 +110,15 @@ impl SystemFormat<'_> {
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(
-                self.device(max_length - 4),
-                print_space,
-            );
+            Self::print_info(self.device(max_length - 4), print_space);
             count_of_info += 1;
         }
         if settings.kernel {
-            Self::print_info(
-                self.kernel(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.kernel(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.uptime {
-            Self::print_info(
-                self.uptime(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.uptime(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.pkgs {
@@ -144,10 +126,7 @@ impl SystemFormat<'_> {
             count_of_info += 1;
         }
         if settings.memory {
-            Self::print_info(
-                self.memory(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.memory(max_length - 6), print_space);
             count_of_info += 1;
         }
 
