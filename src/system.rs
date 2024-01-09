@@ -200,6 +200,20 @@ impl System {
                 ),
                 c_str("r\0"),
             );
+            if name == core::ptr::null_mut()
+                || version == core::ptr::null_mut()
+            {
+                let result = [0; LEN_STRING];
+                let spaces_str = malloc(info_space) as *mut c_char;
+                core::ptr::write_bytes(spaces_str, 0x20, info_space);
+                sprintf(
+                    result.as_ptr() as *mut c_char,
+                    c_str("host %sunknown\0"),
+                    spaces_str,
+                );
+
+                return c_str(&result);
+            }
         }
 
         let result = [0; LEN_STRING];
@@ -306,22 +320,39 @@ impl System {
         let file =
             unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
+        if file == core::ptr::null_mut() {
+            unsafe {
+                let result = [0; LEN_STRING];
+                let spaces_str = malloc(info_space) as *mut c_char;
+                core::ptr::write_bytes(spaces_str, 0x20, info_space);
+                strcat(result.as_ptr() as *mut c_char, spaces_str);
+
+                sprintf(
+                    result.as_ptr() as *mut c_char,
+                    c_str("memory %sunknown\0"),
+                    spaces_str,
+                );
+
+                return c_str(&result);
+            }
+        }
+
         let mut line = [0; LEN_STRING + 30];
 
         let mem_available;
         let mut mem_total = 0;
-        let mut sh_mem = 1;
-        let mut mem_free = 1;
-        let mut buffers = 1;
-        let mut cached = 1;
-        let mut s_reclaimable = 1;
+        let mut sh_mem = 0;
+        let mut mem_free = 0;
+        let mut buffers = 0;
+        let mut cached = 0;
+        let mut s_reclaimable = 0;
 
         while mem_total == 0
-            && mem_free == 0
-            && buffers == 0
-            && cached == 0
-            && s_reclaimable == 0
-            && sh_mem == 0
+            || mem_free == 0
+            || buffers == 0
+            || cached == 0
+            || s_reclaimable == 0
+            || sh_mem == 0
         {
             unsafe {
                 let fgets_line = fgets(
@@ -330,58 +361,60 @@ impl System {
                     file,
                 );
 
-                /*
-                let line_str = core::str::from_utf8_unchecked(
-                    slice::from_raw_parts(
-                        c_str(&line) as *const u8,
-                        strlen(c_str(&line)),
-                    ),
-                );
-                */
-                if strstr(c_str(&line), c_str("MemTotal\0")) != core::ptr::null_mut() {
+                if strstr(c_str(&line), c_str("MemTotal\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("MemTotal: %d\0"),
                         &mut mem_total,
                     );
                 }
-                /*
-                if line_str.find("MemFree").is_some() {
+                if strstr(c_str(&line), c_str("MemFree\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("MemFree: %d\0"),
                         &mut mem_free,
                     );
                 }
-                if line_str.find("Buffers").is_some() {
+                if strstr(c_str(&line), c_str("Buffers\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("Buffers: %d\0"),
                         &mut buffers,
                     );
                 }
-                if line_str.find("Cached").is_some() {
+                if strstr(c_str(&line), c_str("Cached\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("Cached: %d\0"),
                         &mut cached,
                     );
                 }
-                if line_str.find("SReclaimable").is_some() {
+                if strstr(c_str(&line), c_str("SReclaimable\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("SReclaimable: %d\0"),
                         &mut s_reclaimable,
                     );
                 }
-                if line_str.find("Shmem").is_some() {
+                if strstr(c_str(&line), c_str("Shmem\0"))
+                    != core::ptr::null_mut()
+                {
                     sscanf(
                         line.as_ptr() as CSTR,
                         c_str("Shmem: %d\0"),
                         &mut sh_mem,
                     );
                 }
-                */
             }
         }
 
@@ -437,6 +470,10 @@ impl System {
         let mut raw_file;
         unsafe {
             let f = fopen(fname, c_str("r\0"));
+
+            if f == core::ptr::null_mut() {
+                return 0;
+            }
 
             let mut stat =
                 MaybeUninit::<stat_struct>::uninit().assume_init();
@@ -509,6 +546,11 @@ impl System {
         let os_release = unsafe {
             fopen(c_str("/etc/os-release\0"), c_str("r\0"))
         };
+
+        if os_release == core::ptr::null_mut() {
+            return "unknown\0";
+        }
+
         let os_name = [0; LEN_STRING + 40];
 
         unsafe {
