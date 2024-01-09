@@ -12,6 +12,7 @@ mod get_info;
 mod fetch_info;
 use fetch_info::FetchInfo;
 
+
 #[no_mangle]
 fn main(_argc: *const CSTR, _argv: isize) -> isize {
     let system = SystemFormat::get_system();
