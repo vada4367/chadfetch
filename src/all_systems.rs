@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use libc::size_t;
+use crate::logos::*;
 
 #[derive(Clone, Copy)]
 pub enum OS {
@@ -9,58 +9,28 @@ pub enum OS {
 }
 
 #[derive(Clone, Copy)]
-pub struct Logo<'a> {
-    pub logo: &'a str,
-    pub w: size_t,
-    pub h: size_t,
-}
-
-#[derive(Clone, Copy)]
 pub struct SystemFormat<'a> {
     pub os: OS,
     pub logo: Logo<'a>,
-    pub name: &'a str,
+    pub name: &'static str,
     pub id: usize,
 }
 
 impl SystemFormat<'_> {
-    const fn new(
+    const fn new<'a>(
         os: OS,
-        logo: &'static str,
-        w: size_t,
-        h: size_t,
+        logo: Logo<'a>,
         name: &'static str,
         id: usize,
-    ) -> Self {
+    ) -> SystemFormat<'a> {
         SystemFormat {
             os: os,
-            logo: Logo {
-                logo: logo,
-                h: h,
-                w: w,
-            },
+            logo: logo,
             name: name,
             id: id,
         }
     }
 }
 
-pub static ALL_SYSTEMS: [SystemFormat<'_>; 1] = [SystemFormat::new(
-    OS::Linux,
-    concat!(
-        r#"
-    _______
- _ \______ -
-| \  ___  \ |
-| | /   \ | |
-| | \___/ | |
-| \______ \_|
- -_______\
-"#,
-        "\0"
-    ),
-    13,
-    7,
-    "Void\0",
-    0,
-)];
+pub const ALL_SYSTEMS: [SystemFormat<'_>; 1] =
+    [SystemFormat::new(OS::Linux, VOID_LOGO, "Void\0", 0)];
