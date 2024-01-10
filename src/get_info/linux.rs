@@ -36,7 +36,10 @@ pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+pub fn device(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
     let (name, version);
 
     unsafe {
@@ -48,7 +51,9 @@ pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
             c_str("/sys/devices/virtual/dmi/id/product_version\0"),
             c_str("r\0"),
         );
-        if name == core::ptr::null_mut() || version == core::ptr::null_mut() {
+        if name == core::ptr::null_mut()
+            || version == core::ptr::null_mut()
+        {
             let result = [0; LEN_STRING];
             let spaces_str = malloc(info_space) as *mut c_char;
             core::ptr::write_bytes(spaces_str, 0x20, info_space);
@@ -83,8 +88,12 @@ pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn kernel(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+pub fn kernel(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
+    let mut name =
+        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
     let result = [0; LEN_STRING];
 
     unsafe {
@@ -102,8 +111,13 @@ pub fn kernel(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let mut sysinfo = unsafe { MaybeUninit::<sysinfo_struct>::uninit().assume_init() };
+pub fn uptime(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
+    let mut sysinfo = unsafe {
+        MaybeUninit::<sysinfo_struct>::uninit().assume_init()
+    };
 
     unsafe {
         sysinfo_function(&mut sysinfo);
@@ -149,8 +163,12 @@ pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn memory(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let file = unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
+pub fn memory(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
+    let file =
+        unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
     if file == core::ptr::null_mut() {
         unsafe {
@@ -187,38 +205,68 @@ pub fn memory(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
         || sh_mem == 0
     {
         unsafe {
-            let fgets_line = fgets(line.as_mut_ptr(), line.len() as c_int, file);
+            let fgets_line =
+                fgets(line.as_mut_ptr(), line.len() as c_int, file);
 
-            if strstr(c_str(&line), c_str("MemTotal\0")) != core::ptr::null_mut() {
+            if strstr(c_str(&line), c_str("MemTotal\0"))
+                != core::ptr::null_mut()
+            {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("MemTotal: %d\0"),
                     &mut mem_total,
                 );
             }
-            if strstr(c_str(&line), c_str("MemFree\0")) != core::ptr::null_mut() {
-                sscanf(line.as_ptr() as CSTR, c_str("MemFree: %d\0"), &mut mem_free);
+            if strstr(c_str(&line), c_str("MemFree\0"))
+                != core::ptr::null_mut()
+            {
+                sscanf(
+                    line.as_ptr() as CSTR,
+                    c_str("MemFree: %d\0"),
+                    &mut mem_free,
+                );
             }
-            if strstr(c_str(&line), c_str("Buffers\0")) != core::ptr::null_mut() {
-                sscanf(line.as_ptr() as CSTR, c_str("Buffers: %d\0"), &mut buffers);
+            if strstr(c_str(&line), c_str("Buffers\0"))
+                != core::ptr::null_mut()
+            {
+                sscanf(
+                    line.as_ptr() as CSTR,
+                    c_str("Buffers: %d\0"),
+                    &mut buffers,
+                );
             }
-            if strstr(c_str(&line), c_str("Cached\0")) != core::ptr::null_mut() {
-                sscanf(line.as_ptr() as CSTR, c_str("Cached: %d\0"), &mut cached);
+            if strstr(c_str(&line), c_str("Cached\0"))
+                != core::ptr::null_mut()
+            {
+                sscanf(
+                    line.as_ptr() as CSTR,
+                    c_str("Cached: %d\0"),
+                    &mut cached,
+                );
             }
-            if strstr(c_str(&line), c_str("SReclaimable\0")) != core::ptr::null_mut() {
+            if strstr(c_str(&line), c_str("SReclaimable\0"))
+                != core::ptr::null_mut()
+            {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("SReclaimable: %d\0"),
                     &mut s_reclaimable,
                 );
             }
-            if strstr(c_str(&line), c_str("Shmem\0")) != core::ptr::null_mut() {
-                sscanf(line.as_ptr() as CSTR, c_str("Shmem: %d\0"), &mut sh_mem);
+            if strstr(c_str(&line), c_str("Shmem\0"))
+                != core::ptr::null_mut()
+            {
+                sscanf(
+                    line.as_ptr() as CSTR,
+                    c_str("Shmem: %d\0"),
+                    &mut sh_mem,
+                );
             }
         }
     }
 
-    mem_available = mem_free + buffers + cached + s_reclaimable - sh_mem;
+    mem_available =
+        mem_free + buffers + cached + s_reclaimable - sh_mem;
 
     let result = [0; LEN_STRING];
     let spaces_str;
@@ -248,16 +296,23 @@ fn xbps() -> size_t {
         return 0;
     }
 
-    let mut fname = c_str(&0);
+    let fname = [0; LEN_STRING];
     loop {
         unsafe {
             dir = readdir(d);
-            if strstr(c_str(&(*dir).d_name), c_str("pkgdb\0")) != core::ptr::null_mut() {
-                fname = c_str(&(*dir).d_name);
+            if strstr(c_str(&(*dir).d_name), c_str("pkgdb\0"))
+                != core::ptr::null_mut()
+            {
+                sprintf(
+                    fname.as_ptr() as *mut c_char,
+                    c_str("/var/db/xbps/%s\0"),
+                    c_str(&(*dir).d_name),
+                );
+                break;
             }
         }
     }
-    if fname == c_str(&0) {
+    if c_str(&fname) == core::ptr::null_mut() {
         return 0;
     }
 
@@ -265,15 +320,16 @@ fn xbps() -> size_t {
 
     let mut raw_file;
     unsafe {
-        let f = fopen(fname, c_str("r\0"));
+        let f = fopen(c_str(&fname), c_str("r\0"));
 
         if f == core::ptr::null_mut() {
             return 0;
         }
 
-        let mut stat = MaybeUninit::<stat_struct>::uninit().assume_init();
+        let mut stat =
+            MaybeUninit::<stat_struct>::uninit().assume_init();
 
-        stat_func(fname, &mut stat);
+        stat_func(c_str(&fname), &mut stat);
         raw_file = malloc(stat.st_size as usize);
         fread(raw_file, 1, stat.st_size as size_t, f);
     }
@@ -281,7 +337,8 @@ fn xbps() -> size_t {
     let mut count = 0;
     unsafe {
         loop {
-            raw_file = strstr(raw_file as CSTR, installed_string) as *mut c_void;
+            raw_file = strstr(raw_file as CSTR, installed_string)
+                as *mut c_void;
             if raw_file == core::ptr::null_mut() {
                 break;
             }
@@ -320,7 +377,8 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 }
 
 pub fn get_os_name() -> &'static str {
-    let os_release = unsafe { fopen(c_str("/etc/os-release\0"), c_str("r\0")) };
+    let os_release =
+        unsafe { fopen(c_str("/etc/os-release\0"), c_str("r\0")) };
 
     if os_release == core::ptr::null_mut() {
         return "unknown\0";
@@ -330,9 +388,15 @@ pub fn get_os_name() -> &'static str {
     let os_name_str = unsafe { malloc(40) } as *mut c_char;
 
     unsafe {
-        let fgets_line = fgets(os_name.as_mut_ptr(), os_name.len() as c_int, os_release);
+        let fgets_line = fgets(
+            os_name.as_mut_ptr(),
+            os_name.len() as c_int,
+            os_release,
+        );
 
-        if strstr(c_str(&os_name), c_str("NAME\0")) != core::ptr::null_mut() {
+        if strstr(c_str(&os_name), c_str("NAME\0"))
+            != core::ptr::null_mut()
+        {
             sscanf(
                 os_name.as_ptr() as CSTR,
                 c_str("NAME=\"%s\"\0"),
