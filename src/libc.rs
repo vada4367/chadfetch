@@ -8,8 +8,7 @@
 
 use libc::{
     c_char, c_int, c_void, dirent, passwd, size_t,
-    stat as stat_struct, sysinfo as sysinfo_struct, uid_t, utsname,
-    DIR, FILE,
+    stat as stat_struct, uid_t, utsname, DIR, FILE,
 };
 
 pub type CSTR = *const c_char;
@@ -28,7 +27,6 @@ extern "C" {
     pub fn strcat(s: *mut c_char, ct: CSTR);
     pub fn gethostname(name: *mut c_char, len: size_t) -> c_int;
     pub fn uname(buf: *mut utsname) -> c_int;
-    pub fn sysinfo(info: *mut sysinfo_struct) -> c_int;
     pub fn sprintf(
         s: *mut c_char,
         format: *const c_char,

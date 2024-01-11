@@ -9,12 +9,12 @@ use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
     getpwuid, malloc, opendir, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    sysinfo as sysinfo_function, uname, CSTR,
+    uname, CSTR,
 };
 
 use libc::{
     c_char, c_int, c_void, size_t, sscanf, stat as stat_struct,
-    sysinfo as sysinfo_struct, utsname,
+    utsname,
 };
 
 use crate::fetch_info::FetchInfo;

@@ -115,6 +115,9 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    use libc::{
+        sysinfo as sysinfo_struct, sysinfo as sysinfo_function,
+    };
     let mut sysinfo = unsafe {
         MaybeUninit::<sysinfo_struct>::uninit().assume_init()
     };
