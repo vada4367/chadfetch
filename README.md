@@ -1,13 +1,23 @@
-  *  This repository provides an INCREDIBLE
-  *  opportunity to view data about your system
-  *  SAFELY :P
+# CHADFETCH
+
+ Really GigaChad Fetch!
+
+ This repository provides an INCREDIBLE
+opportunity to view data about your system
+SAFELY :P
+ 
+ All code is rust with libc
+(only libc funcs is unsafely)
 
 
-  **Good luck!**
-
+Installation:
 
 ```
- * $ git clone https://gitlab.com/vada4367/rfetch.git
- * $ cd rfetch
- * $ cargo run --release
+ git clone https://gitlab.com/vada4367/rfetch.git
+```
+```
+ cd chadfetch
+```
+```
+ cargo run --release
 ```
