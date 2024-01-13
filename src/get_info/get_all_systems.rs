@@ -38,15 +38,15 @@ pub fn get_os() -> OS {
     let sysname = unsafe {
         core::str::from_utf8_unchecked(slice::from_raw_parts(
             name.sysname.as_ptr() as *const u8,
-            strlen(name.sysname.as_ptr() as CSTR),
+            strlen(name.sysname.as_ptr() as CSTR) + 1,
         ))
     };
 
     match sysname {
-        "Linux" => {
+        "Linux\0" => {
             return OS::Linux;
         }
-        "OpenBSD" => {
+        "OpenBSD\0" => {
             return OS::BSD;
         }
         _ => {
