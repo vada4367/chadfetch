@@ -22,13 +22,15 @@ pub fn user_host(sys_format: &SystemFormat) -> CSTR {
 pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING];
     unsafe {
+        /*
         let spaces_str = malloc(info_space) as *mut c_char;
         core::ptr::write_bytes(spaces_str, 0x20, info_space);
+        */
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("os %s%s\0"),
-            spaces_str,
+            c_str("os %s\0"),
+            //spaces_str,
             c_str(sys_format.name),
         );
     }
