@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::get_info::*;
 extern crate libc;
 
@@ -16,9 +18,9 @@ pub fn device(
     if file_ptr.is_null() {
         return c_str("popen_error\0");
     }
-    let mut output = [0; LEN_STRING + 100];
+    let output = [0; LEN_STRING + 100];
 
-    let mut result = [0; LEN_STRING];
+    let result = [0; LEN_STRING];
     unsafe {
         fgets(
             output.as_ptr() as *mut c_char,
@@ -67,5 +69,20 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 }
 
 pub fn get_os_name() -> &'static str {
-    "OpenBSD"
+    let result = [0; LEN_STRING];
+
+    let mut name =
+        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+
+    unsafe {
+        uname(&mut name);
+
+        sprintf(
+            result.as_ptr() as *mut c_char,
+            c_str("%s\0"),
+            c_str(&name.sysname),
+        );
+    }
+
+    unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(c_str(&result) as *const u8, strlen(c_str(&result)))) }
 }
