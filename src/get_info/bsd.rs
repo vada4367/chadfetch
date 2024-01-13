@@ -14,18 +14,18 @@ pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     }
     let mut output = [0; LEN_STRING + 100];
     
-    let result = [0; LEN_STRING];
+    let mut result = [0; LEN_STRING];
     unsafe {
         fgets(output.as_ptr() as *mut c_char, (LEN_STRING + 100) as i32, file_ptr);
         sprintf(
-            c_str(&result),
-            c_str("host %s%s"),
-            spaces_str,
-            output,
+            result.as_ptr() as *mut c_char,
+            c_str("host %s%s\0"),
+            spaces_str.as_ptr() as CSTR,
+            c_str(&output),
         );
     }
 
-    c_str(&result);
+    c_str(&result)
 }
 
 

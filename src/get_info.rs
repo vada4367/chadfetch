@@ -182,8 +182,8 @@ impl SystemFormat<'_> {
                 return linux::device(self, info_space);
             }
             OS::BSD => {
-                bsd::device(self, info_space);
-                return c_str("unknown\0");
+                return bsd::device(self, info_space);
+                //return c_str("unknown\0");
             }
             _ => {
                 return c_str("unknown_os\0");
