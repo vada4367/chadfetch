@@ -13,7 +13,7 @@ SAFELY :P
 Installation:
 
 ```
- git clone https://gitlab.com/vada4367/rfetch.git
+ git clone https://gitlab.com/vada4367/chadfetch.git
 ```
 ```
  cd chadfetch
