@@ -32,7 +32,12 @@ const LEN_STRING: usize = 1;
 impl SystemFormat<'_> {
     pub fn get_system() -> Self {
         let os = unix::get_os();
-        let os_name = Self::get_os_name().as_ptr() as CSTR;
+        let mut os_name = c_str("unknown\0");
+
+        match os {
+            OS::Linux => { os_name = Self::get_os_name().as_ptr() as CSTR; },
+            _ => {},
+        }
 
         // DELETE ALL "
         let mut p = os_name;
