@@ -2,19 +2,30 @@ use crate::get_info::*;
 extern crate libc;
 
 pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
+
     let file_ptr = unsafe { popen(c_str("/sbin/sysctl -n hw.product\0"), c_str("r\0")) };
 
     if file_ptr.is_null() {
         return c_str("popen_error\0");
     }
-
     let mut output = [0; LEN_STRING + 100];
-
+    
+    let result = [0; LEN_STRING];
     unsafe {
-        fgets(output.as_ptr() as *mut c_char, (LEN_STRING + 100).try_into().unwrap(), file_ptr);
+        fgets(output.as_ptr() as *mut c_char, (LEN_STRING + 100) as i32, file_ptr);
+        sprintf(
+            c_str(&result),
+            c_str("host %s%s"),
+            spaces_str,
+            output,
+        );
     }
 
-    c_str(&output)
+    c_str(&result);
 }
 
 
