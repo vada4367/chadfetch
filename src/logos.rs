@@ -17,7 +17,7 @@ impl Logo<'_> {
     }
 }
 
-pub const UNKNOWN_LOGO: Logo<'_> = Logo::new(
+pub const UNKNOWN_LINUX_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
      ___ 
@@ -33,6 +33,24 @@ pub const UNKNOWN_LOGO: Logo<'_> = Logo::new(
     13,
     7,
 );
+
+pub const OPENBSD: Logo<'_> = Logo::new(
+    concat!(
+        r#"
+     ___ 
+    (.. |
+    (<> |
+   / __  \
+  ( /  \ /|
+ _/\ __)/_)
+ \/-____\/
+"#,
+        "\0"
+    ),
+    13,
+    7,
+);
+
 
 pub const VOID_LOGO: Logo<'_> = Logo::new(
     concat!(
