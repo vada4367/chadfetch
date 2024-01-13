@@ -34,7 +34,7 @@ pub fn device(
     }
 
     // DELETE ALL "
-    let mut p = result;
+    let mut p = result.as_ptr() as CSTR;
     loop {
         // 0x0a IS \n
         p = unsafe { strchr(p, 0x0a as c_int) };
