@@ -3,6 +3,7 @@ name = "chadfetch"
 version = "0.1.0"
 edition = "2021"
 authors = ["Vadim Wagner <gidra4367@protonmail.com>"]
+description = "Console utilite for watch info about your system"
 repository = "https://gitlab.com/vada4367/rfetch"
 license-file = "LICENSE"
 catigories = ["command-line-utilities"]
