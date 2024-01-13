@@ -25,4 +25,4 @@ panic = 'abort'
 
 
 [dependencies]
-libc = "*"
+libc = "0.2.152"
