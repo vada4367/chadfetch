@@ -9,8 +9,8 @@ license-file = "LICENSE"
 
 [profile.release]
 debug = false
-strip = true
-opt-level = 's'
+#strip = true
+opt-level = 'z'
 codegen-units = 1
 lto = true
 panic = 'abort'

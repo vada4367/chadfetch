@@ -115,24 +115,43 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    use libc::{
-        sysinfo as sysinfo_struct, sysinfo as sysinfo_function,
-    };
-    let mut sysinfo = unsafe {
-        MaybeUninit::<sysinfo_struct>::uninit().assume_init()
-    };
+    let file =
+        unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
+    let result = [0; LEN_STRING + 100];
 
-    unsafe {
-        sysinfo_function(&mut sysinfo);
+    if file == core::ptr::null_mut() {
+        unsafe {
+            let spaces_str = malloc(info_space) as *mut c_char;
+            core::ptr::write_bytes(spaces_str, 0x20, info_space);
+            strcat(result.as_ptr() as *mut c_char, spaces_str);
+
+            sprintf(
+                result.as_ptr() as *mut c_char,
+                c_str("uptime %sunknown\0"),
+                spaces_str,
+            );
+
+            return c_str(&result);
+        }
     }
 
-    let uptime = sysinfo.uptime;
+    let mut line = [0; LEN_STRING + 30];
+    let (mut uptime, mut _uptime) = (0, 0);
+
+    unsafe {
+        let fgets_line =
+            fgets(line.as_mut_ptr(), line.len() as c_int, file);
+        sscanf(
+            c_str(&line),
+            c_str("%d %d\0"),
+            &mut uptime,
+            &mut _uptime,
+        );
+    }
 
     let updays = [0; LEN_STRING + 64];
     let uphours = [0; LEN_STRING + 5];
     let upmins = [0; LEN_STRING + 5];
-
-    let result = [0; LEN_STRING + 100];
 
     unsafe {
         sprintf(
