@@ -6,7 +6,7 @@ authors = ["Vadim Wagner <gidra4367@protonmail.com>"]
 description = "Console utilite for watch info about your system"
 repository = "https://gitlab.com/vada4367/rfetch"
 license-file = "LICENSE"
-catigories = ["command-line-utilities"]
+#catigories = ["command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.release]

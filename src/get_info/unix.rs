@@ -19,7 +19,6 @@ pub fn user_host(sys_format: &SystemFormat) -> CSTR {
     c_str(&result)
 }
 
-
 pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let mut spaces = [0x20 as c_char; LEN_STRING + 100];
     let spaces_str = &mut spaces[..info_space + 1];

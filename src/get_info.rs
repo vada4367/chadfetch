@@ -9,7 +9,7 @@ use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
     getpwuid, malloc, opendir, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    uname, CSTR,
+    uname, CSTR, popen,
 };
 
 use libc::{
@@ -24,8 +24,9 @@ use core::slice;
 
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
-mod unix;
 mod linux;
+mod bsd;
+mod unix;
 
 const LEN_STRING: usize = 1;
 
@@ -35,8 +36,10 @@ impl SystemFormat<'_> {
         let mut os_name = c_str("unknown\0");
 
         match os {
-            OS::Linux => { os_name = Self::get_os_name().as_ptr() as CSTR; },
-            _ => {},
+            OS::Linux => {
+                os_name = Self::get_os_name().as_ptr() as CSTR;
+            }
+            _ => {}
         }
 
         // DELETE ALL "
@@ -177,6 +180,10 @@ impl SystemFormat<'_> {
         match self.os {
             OS::Linux => {
                 return linux::device(self, info_space);
+            }
+            OS::BSD => {
+                bsd::device(self, info_space);
+                return c_str("unknown\0");
             }
             _ => {
                 return c_str("unknown_os\0");

@@ -1,4 +1,5 @@
 use crate::get_info::*;
+
 pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,

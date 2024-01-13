@@ -51,6 +51,7 @@ extern "C" {
     ) -> *mut c_char;
     pub fn opendir(dirname: *const c_char) -> *mut DIR;
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
+    pub fn popen(command: CSTR, mode: CSTR) -> *mut FILE;
 }
 
 #[panic_handler]
