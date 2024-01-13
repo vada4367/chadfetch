@@ -20,17 +20,16 @@ pub fn user_host(sys_format: &SystemFormat) -> CSTR {
 }
 
 pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let result = [0; LEN_STRING];
     unsafe {
-        /*
-        let spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
-        */
-
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("os %s\0"),
-            //spaces_str,
+            c_str("os %s%s\0"),
+            spaces_str.as_ptr() as *const c_char,
             c_str(sys_format.name),
         );
     }
@@ -42,6 +41,11 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let (name, version);
 
     unsafe {
@@ -57,12 +61,11 @@ pub fn device(
             || version == core::ptr::null_mut()
         {
             let result = [0; LEN_STRING];
-            let spaces_str = malloc(info_space) as *mut c_char;
-            core::ptr::write_bytes(spaces_str, 0x20, info_space);
+
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("host %sunknown\0"),
-                spaces_str,
+                spaces_str.as_ptr() as *const c_char,
             );
 
             return c_str(&result);
@@ -74,14 +77,12 @@ pub fn device(
     let version_str = [0; LEN_STRING];
 
     unsafe {
-        let spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
         fscanf(name, c_str("%s\n\0"), c_str(&name_str));
         fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("host %s%s %s\0"),
-            spaces_str,
+            spaces_str.as_ptr() as *const c_char,
             c_str(&name_str),
             c_str(&version_str),
         );
@@ -94,18 +95,21 @@ pub fn kernel(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let mut name =
         unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
     let result = [0; LEN_STRING];
 
     unsafe {
         uname(&mut name);
-        let spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
+
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("kernel %s%s\0"),
-            spaces_str,
+            spaces_str.as_ptr() as *const c_char,
             c_str(&name.release),
         );
     }
@@ -117,15 +121,20 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let file =
         unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
     let result = [0; LEN_STRING + 100];
 
     if file == core::ptr::null_mut() {
         unsafe {
-            let spaces_str = malloc(info_space) as *mut c_char;
-            core::ptr::write_bytes(spaces_str, 0x20, info_space);
-            strcat(result.as_ptr() as *mut c_char, spaces_str);
+            strcat(
+                result.as_ptr() as *mut c_char,
+                spaces_str.as_ptr() as *const c_char,
+            );
 
             sprintf(
                 result.as_ptr() as *mut c_char,
@@ -172,9 +181,10 @@ pub fn uptime(
             uptime % 3600 / 60,
         );
         strcat(result.as_ptr() as *mut c_char, c_str("uptime \0"));
-        let spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
-        strcat(result.as_ptr() as *mut c_char, spaces_str);
+        strcat(
+            result.as_ptr() as *mut c_char,
+            spaces_str.as_ptr() as *const c_char,
+        );
         if uptime / 86400 != 0 {
             strcat(result.as_ptr() as *mut c_char, c_str(&updays));
         }
@@ -191,20 +201,21 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let file =
         unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
     if file == core::ptr::null_mut() {
         unsafe {
             let result = [0; LEN_STRING];
-            let spaces_str = malloc(info_space) as *mut c_char;
-            core::ptr::write_bytes(spaces_str, 0x20, info_space);
-            strcat(result.as_ptr() as *mut c_char, spaces_str);
 
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("memory %sunknown\0"),
-                spaces_str,
+                spaces_str.as_ptr() as *const c_char,
             );
 
             return c_str(&result);
@@ -293,17 +304,11 @@ pub fn memory(
         mem_free + buffers + cached + s_reclaimable - sh_mem;
 
     let result = [0; LEN_STRING];
-    let spaces_str;
-
     unsafe {
-        spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
-        strcat(result.as_ptr() as *mut c_char, spaces_str);
-
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("memory %s%dM / %dM\0"),
-            spaces_str,
+            spaces_str.as_ptr() as *const c_char,
             (mem_total - mem_available) / 1024,
             mem_total / 1024,
         );
@@ -375,6 +380,10 @@ fn xbps() -> size_t {
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
     let mut distro_pkgs = 0;
 
     let xbps_pkgs = xbps();
@@ -385,12 +394,10 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 
     let result: [c_char; LEN_STRING] = [0; LEN_STRING];
     unsafe {
-        let spaces_str = malloc(info_space) as *mut c_char;
-        core::ptr::write_bytes(spaces_str, 0x20, info_space);
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("pkgs %s%d \0"),
-            spaces_str,
+            spaces_str.as_ptr() as *const c_char,
             distro_pkgs,
         );
 

@@ -19,14 +19,14 @@ fn main(_argc: *const CSTR, _argv: isize) -> isize {
     let system = SystemFormat::get_system();
 
     let settings = FetchInfo {
-        logo: false,
+        logo: true,
         user_host: true,
         os: true,
-        device: false,
-        kernel: false,
-        uptime: false,
-        pkgs: false,
-        memory: false,
+        device: true,
+        kernel: true,
+        uptime: true,
+        pkgs: true,
+        memory: true,
     };
 
     system.print_fetch(settings);
