@@ -29,7 +29,7 @@ pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("os %s%s\0"),
-            spaces_str.as_ptr() as *const c_char,
+            spaces_str.as_ptr() as CSTR,
             c_str(sys_format.name),
         );
     }
@@ -64,7 +64,7 @@ pub fn device(
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("host %sunknown\0"),
-                spaces_str.as_ptr() as *const c_char,
+                spaces_str.as_ptr() as CSTR,
             );
 
             return c_str(&result);
@@ -81,7 +81,7 @@ pub fn device(
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("host %s%s %s\0"),
-            spaces_str.as_ptr() as *const c_char,
+            spaces_str.as_ptr() as CSTR,
             c_str(&name_str),
             c_str(&version_str),
         );
@@ -106,7 +106,7 @@ pub fn uptime(
         unsafe {
             strcat(
                 result.as_ptr() as *mut c_char,
-                spaces_str.as_ptr() as *const c_char,
+                spaces_str.as_ptr() as CSTR,
             );
 
             sprintf(
@@ -156,7 +156,7 @@ pub fn uptime(
         strcat(result.as_ptr() as *mut c_char, c_str("uptime \0"));
         strcat(
             result.as_ptr() as *mut c_char,
-            spaces_str.as_ptr() as *const c_char,
+            spaces_str.as_ptr() as CSTR,
         );
         if uptime / 86400 != 0 {
             strcat(result.as_ptr() as *mut c_char, c_str(&updays));
@@ -188,7 +188,7 @@ pub fn memory(
             sprintf(
                 result.as_ptr() as *mut c_char,
                 c_str("memory %sunknown\0"),
-                spaces_str.as_ptr() as *const c_char,
+                spaces_str.as_ptr() as CSTR,
             );
 
             return c_str(&result);
@@ -281,7 +281,7 @@ pub fn memory(
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("memory %s%dM / %dM\0"),
-            spaces_str.as_ptr() as *const c_char,
+            spaces_str.as_ptr() as CSTR,
             (mem_total - mem_available) / 1024,
             mem_total / 1024,
         );
@@ -370,7 +370,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("pkgs %s%d \0"),
-            spaces_str.as_ptr() as *const c_char,
+            spaces_str.as_ptr() as CSTR,
             distro_pkgs,
         );
 

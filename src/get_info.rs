@@ -49,7 +49,8 @@ impl SystemFormat<'_> {
             if system.os == OS::BSD && system.os == os {
                 return system;
             }
-            if system.name
+            if system.os == os &&
+               system.name
                 == unsafe {
                     core::str::from_utf8_unchecked(
                         slice::from_raw_parts(
