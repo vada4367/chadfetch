@@ -24,12 +24,14 @@ use core::slice;
 
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
+mod get_all_systems;
 mod linux;
 
 const LEN_STRING: usize = 1;
 
 impl SystemFormat<'_> {
     pub fn get_system() -> Self {
+        let os = get_all_systems::get_os();
         let os_name = Self::get_os_name().as_ptr() as CSTR;
 
         // DELETE ALL "
@@ -44,6 +46,9 @@ impl SystemFormat<'_> {
         }
 
         for system in ALL_SYSTEMS {
+            if system.os == OS::BSD && system.os == os {
+                return system;
+            }
             if system.name
                 == unsafe {
                     core::str::from_utf8_unchecked(
@@ -190,7 +195,7 @@ impl SystemFormat<'_> {
     fn kernel(&self, info_space: size_t) -> CSTR {
         match self.os {
             OS::Linux => {
-                return linux::kernel(self, info_space);
+                return get_all_systems::kernel(self, info_space);
             }
             _ => {
                 return c_str("unknown_os\0");

@@ -90,32 +90,6 @@ pub fn device(
     c_str(&result)
 }
 
-pub fn kernel(
-    sys_format: &SystemFormat,
-    info_space: size_t,
-) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
-
-    let mut name =
-        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
-    let result = [0; LEN_STRING];
-
-    unsafe {
-        uname(&mut name);
-
-        sprintf(
-            result.as_ptr() as *mut c_char,
-            c_str("kernel %s%s\0"),
-            spaces_str.as_ptr() as *const c_char,
-            c_str(&name.release),
-        );
-    }
-
-    c_str(&result)
-}
-
 pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
