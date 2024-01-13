@@ -34,12 +34,23 @@ pub fn get_os() -> OS {
     unsafe {
         uname(&mut name);
     }
-    
-    let sysname = unsafe { core::str::from_utf8_unchecked(slice::from_raw_parts(name.sysname.as_ptr() as *const u8, strlen(name.sysname.as_ptr() as CSTR))) };
+
+    let sysname = unsafe {
+        core::str::from_utf8_unchecked(slice::from_raw_parts(
+            name.sysname.as_ptr() as *const u8,
+            strlen(name.sysname.as_ptr() as CSTR),
+        ))
+    };
 
     match sysname {
-        "Linux" => { return OS::Linux; },
-        "OpenBSD" => { return OS::BSD; },
-        _ => { return OS::Unknown; },
+        "Linux" => {
+            return OS::Linux;
+        }
+        "OpenBSD" => {
+            return OS::BSD;
+        }
+        _ => {
+            return OS::Unknown;
+        }
     }
 }

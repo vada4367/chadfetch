@@ -49,16 +49,16 @@ impl SystemFormat<'_> {
             if system.os == OS::BSD && system.os == os {
                 return system;
             }
-            if system.os == os &&
-               system.name
-                == unsafe {
-                    core::str::from_utf8_unchecked(
-                        slice::from_raw_parts(
-                            os_name as *const u8,
-                            strlen(os_name) + 1,
-                        ),
-                    )
-                }
+            if system.os == os
+                && system.name
+                    == unsafe {
+                        core::str::from_utf8_unchecked(
+                            slice::from_raw_parts(
+                                os_name as *const u8,
+                                strlen(os_name) + 1,
+                            ),
+                        )
+                    }
             {
                 return system;
             }
