@@ -7,9 +7,9 @@
 
 use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
-    getpwuid, malloc, opendir, printf, readdir, sprintf,
+    getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    uname, CSTR, popen,
+    uname, CSTR,
 };
 
 use libc::{
@@ -24,8 +24,8 @@ use core::slice;
 
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
-mod linux;
 mod bsd;
+mod linux;
 mod unix;
 
 const LEN_STRING: usize = 1;
