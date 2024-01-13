@@ -9,6 +9,7 @@
 use libc::{
     c_char, c_int, c_void, dirent, passwd, size_t,
     stat as stat_struct, uid_t, utsname, DIR, FILE,
+    rusage,
 };
 
 pub type CSTR = *const c_char;
@@ -52,9 +53,14 @@ extern "C" {
     pub fn opendir(dirname: *const c_char) -> *mut DIR;
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
     pub fn popen(command: CSTR, mode: CSTR) -> *mut FILE;
+    pub fn getrusage(
+        resource: c_int,
+        usage: *mut rusage
+    ) -> c_int;
 }
 
 #[panic_handler]
 fn panic_handler(_: &core::panic::PanicInfo<'_>) -> ! {
     loop {}
 }
+
