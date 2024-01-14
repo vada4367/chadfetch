@@ -52,7 +52,39 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    todo!();
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
+    let boottime = unsafe {
+        popen(c_str("/sbin/sysctl -n kern.boottime\0"), c_str("r\0"))
+    };
+
+    if boottime.is_null() {
+        return c_str("popen_error\0");
+    }
+
+    let bt_output = [0; LEN_STRING + 100];
+    let bt;
+    let result = [0; LEN_STRING];
+
+    unsafe {
+        fgets(
+            bt_output.as_ptr() as *mut c_char,
+            (LEN_STRING + 100) as i32,
+            boottime,
+        );
+
+        bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10) as size_t;
+        sprintf(
+            result.as_ptr() as *mut c_char,
+            c_str("uptime %s%d\0"),
+            spaces_str.as_ptr() as CSTR,
+            time(core::ptr::null_mut()) as size_t - bt,
+        );
+    }
+
+    c_str(&result)
 }
 
 pub fn memory(

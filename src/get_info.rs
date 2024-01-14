@@ -9,7 +9,7 @@ use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
     getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    uname, CSTR, strtoll,
+    uname, CSTR, strtoll, time,
 };
 
 use libc::{

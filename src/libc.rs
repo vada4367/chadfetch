@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 //
 // THIS FILE IS INTENDED TO SOLUTION
 // PROBLEMS WITH A COMPILER WITHOUT A
@@ -9,7 +11,7 @@
 use libc::{
     c_char, c_int, c_void, dirent, passwd, size_t,
     stat as stat_struct, uid_t, utsname, DIR, FILE,
-    c_longlong,
+    c_longlong, time_t,
 };
 
 pub type CSTR = *const c_char;
@@ -54,6 +56,7 @@ extern "C" {
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
     pub fn popen(command: CSTR, mode: CSTR) -> *mut FILE;
     pub fn strtoll(s: CSTR, endp: *mut *mut c_char, base: c_int) -> c_longlong;
+    pub fn time(time: *mut time_t) -> time_t;
 }
 
 #[panic_handler]
