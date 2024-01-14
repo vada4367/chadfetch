@@ -32,7 +32,7 @@ pub fn device(
         );
     }
 
-    utils::delete_char(result.as_ptr() as CSTR, '\n' as c_int);
+    utils::delete_char!(result.as_ptr() as CSTR, '\n' as c_int);
 
     c_str(&result)
 }

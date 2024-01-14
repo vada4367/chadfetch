@@ -59,7 +59,6 @@ pub fn uptime(
     let mut line = [0; LEN_STRING + 30];
     let (mut uptime, mut _uptime) = (0, 0);
     unsafe {
-
         fgets(line.as_mut_ptr(), line.len() as c_int, file);
         sscanf(
             c_str(&line),
@@ -68,7 +67,7 @@ pub fn uptime(
             &mut _uptime,
         );
     }
-    
+
     let time_str = utils::time(uptime);
 
     unsafe {
@@ -108,12 +107,14 @@ pub fn memory(
     let mut line = [0; LEN_STRING + 30];
 
     let mem_available;
-    let mut mem_total = 0;
-    let mut sh_mem = 0;
-    let mut mem_free = 0;
-    let mut buffers = 0;
-    let mut cached = 0;
-    let mut s_reclaimable = 0;
+    let (
+        mut mem_total,
+        mut sh_mem,
+        mut mem_free,
+        mut buffers,
+        mut cached,
+        mut s_reclaimable,
+    ) = (0, 0, 0, 0, 0, 0);
 
     while mem_total == 0
         || mem_free == 0

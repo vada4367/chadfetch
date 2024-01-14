@@ -1,6 +1,5 @@
 use crate::libc::*;
-use ::libc::{size_t, c_char, c_int};
-
+use ::libc::{c_char, size_t};
 
 pub const LEN_STRING: usize = 1;
 
@@ -36,24 +35,36 @@ pub fn time(secs: size_t) -> CSTR {
         );
 
         if secs / 86400 != 0 {
-            strcat(result.as_ptr() as *mut c_char, updays.as_ptr() as CSTR);
+            strcat(
+                result.as_ptr() as *mut c_char,
+                updays.as_ptr() as CSTR,
+            );
         }
         if secs % 86400 / 3600 != 0 {
-            strcat(result.as_ptr() as *mut c_char, uphours.as_ptr() as CSTR);
+            strcat(
+                result.as_ptr() as *mut c_char,
+                uphours.as_ptr() as CSTR,
+            );
         }
-        strcat(result.as_ptr() as *mut c_char, upmins.as_ptr() as CSTR);
+        strcat(
+            result.as_ptr() as *mut c_char,
+            upmins.as_ptr() as CSTR,
+        );
     }
 
     c_str(&result)
 }
 
-pub fn delete_char(c_str: CSTR, sym: c_int) {
-    let mut p = c_str;
-    loop {
-        p = unsafe { strchr(p, sym) };
-        if p == core::ptr::null() {
-            break;
+macro_rules! delete_char {
+    ($string:expr, $char:expr) => {{
+        let mut p = $string;
+        loop {
+            p = unsafe { strchr(p, $char) };
+            if p == core::ptr::null() {
+                break;
+            }
+            unsafe { strcpy(p as *mut c_char, p.add(1)) };
         }
-        unsafe { strcpy(p as *mut c_char, p.add(1)) };
-    }
+    }};
 }
+pub(crate) use delete_char;
