@@ -228,6 +228,9 @@ impl SystemFormat<'_> {
             OS::Linux => {
                 return linux::pkgs(self, info_space);
             }
+            OS::BSD => {
+                return bsd::pkgs(self, info_space);
+            }
             _ => {
                 return c_str("unknown_os\0");
             }

@@ -181,7 +181,38 @@ pub fn memory(
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    todo!();
+    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
+    let spaces_str = &mut spaces[..info_space + 1];
+    spaces_str[info_space] = 0 as c_char;
+
+    let result = [0; LEN_STRING];
+
+    let mut dir;
+    let d = unsafe { opendir(c_str("/var/db/pkg/\0")) };
+
+    let mut pkgs = 0;
+    if d != core::ptr::null_mut() {
+        loop {
+            unsafe {
+                dir = readdir(d);
+                if dir == core::ptr::null_mut() {
+                    break;
+                }
+
+                pkgs += 1;
+            }
+        }
+    }
+
+    unsafe {
+        sprintf(
+            result.as_ptr() as *mut c_char,
+            c_str("pkgs %s%d\0"),
+            pkgs,
+        );
+    }
+
+    c_str(&result)
 }
 
 pub fn get_os_name() -> &'static str {
