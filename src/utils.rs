@@ -12,11 +12,11 @@ pub fn spaces(info_space: size_t) -> [c_char; 20] {
 }
 
 pub fn time(secs: size_t) -> CSTR {
-    let result = [0; LEN_STRING + 64];
+    let result = [0; LEN_STRING + 100];
 
-    let updays = [0; LEN_STRING + 32];
-    let uphours = [0; LEN_STRING + 4];
-    let upmins = [0; LEN_STRING + 4];
+    let updays = [0; LEN_STRING + 64];
+    let uphours = [0; LEN_STRING + 16];
+    let upmins = [0; LEN_STRING + 16];
 
     unsafe {
         sprintf(
