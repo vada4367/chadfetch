@@ -6,9 +6,7 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let file_ptr = unsafe {
         popen(c_str("/sbin/sysctl -n hw.product\0"), c_str("r\0"))
@@ -52,9 +50,7 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let boottime = unsafe {
         popen(c_str("/sbin/sysctl -n kern.boottime\0"), c_str("r\0"))
@@ -68,6 +64,8 @@ pub fn uptime(
         ([0; LEN_STRING + 100], [0; LEN_STRING + 100]);
     let (bt, uptime);
 
+    let result = [0; LEN_STRING];
+
     unsafe {
         fgets(
             bt_output.as_ptr() as *mut c_char,
@@ -78,40 +76,13 @@ pub fn uptime(
         bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10)
             as size_t;
         uptime = time(core::ptr::null_mut()) as size_t - bt;
-    }
 
-    let updays = [0; LEN_STRING + 64];
-    let uphours = [0; LEN_STRING + 5];
-    let upmins = [0; LEN_STRING + 5];
-
-    unsafe {
         sprintf(
-            updays.as_ptr() as *mut c_char,
-            c_str("%dd \0"),
-            uptime / 86400,
-        );
-        sprintf(
-            uphours.as_ptr() as *mut c_char,
-            c_str("%dh \0"),
-            uptime % 86400 / 3600,
-        );
-        sprintf(
-            upmins.as_ptr() as *mut c_char,
-            c_str("%dm \0"),
-            uptime % 3600 / 60,
-        );
-        strcat(result.as_ptr() as *mut c_char, c_str("uptime \0"));
-        strcat(
             result.as_ptr() as *mut c_char,
+            c_str("uptime %s%s\0"),
             spaces_str.as_ptr() as CSTR,
+            utils::time(uptime),
         );
-        if uptime / 86400 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&updays));
-        }
-        if uptime % 86400 / 3600 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&uphours));
-        }
-        strcat(result.as_ptr() as *mut c_char, c_str(&upmins));
     }
 
     c_str(&result)
@@ -121,9 +92,7 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let physmem = unsafe {
         popen(c_str("/sbin/sysctl -n hw.physmem\0"), c_str("r\0"))
@@ -180,9 +149,7 @@ pub fn memory(
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let result = [0; LEN_STRING];
 

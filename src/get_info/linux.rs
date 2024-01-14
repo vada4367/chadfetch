@@ -4,12 +4,9 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let (name, version);
-
     unsafe {
         name = fopen(
             c_str("/sys/devices/virtual/dmi/id/product_name\0"),
@@ -22,15 +19,7 @@ pub fn device(
         if name == core::ptr::null_mut()
             || version == core::ptr::null_mut()
         {
-            let result = [0; LEN_STRING];
-
-            sprintf(
-                result.as_ptr() as *mut c_char,
-                c_str("host %sunknown\0"),
-                spaces_str.as_ptr() as CSTR,
-            );
-
-            return c_str(&result);
+            return c_str("host\0");
         }
     }
 
@@ -44,7 +33,7 @@ pub fn device(
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("host %s%s %s\0"),
-            spaces_str.as_ptr() as CSTR,
+            spaces_str,
             c_str(&name_str),
             c_str(&version_str),
         );
@@ -57,37 +46,21 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let file =
         unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
     let result = [0; LEN_STRING + 100];
 
     if file == core::ptr::null_mut() {
-        unsafe {
-            strcat(
-                result.as_ptr() as *mut c_char,
-                spaces_str.as_ptr() as CSTR,
-            );
-
-            sprintf(
-                result.as_ptr() as *mut c_char,
-                c_str("uptime %sunknown\0"),
-                spaces_str,
-            );
-
-            return c_str(&result);
-        }
+        return c_str("uptime\0");
     }
 
     let mut line = [0; LEN_STRING + 30];
     let (mut uptime, mut _uptime) = (0, 0);
-
     unsafe {
-        let fgets_line =
-            fgets(line.as_mut_ptr(), line.len() as c_int, file);
+
+        fgets(line.as_mut_ptr(), line.len() as c_int, file);
         sscanf(
             c_str(&line),
             c_str("%d %d\0"),
@@ -95,39 +68,16 @@ pub fn uptime(
             &mut _uptime,
         );
     }
-
-    let updays = [0; LEN_STRING + 64];
-    let uphours = [0; LEN_STRING + 5];
-    let upmins = [0; LEN_STRING + 5];
+    
+    let time_str = utils::time(uptime);
 
     unsafe {
         sprintf(
-            updays.as_ptr() as *mut c_char,
-            c_str("%dd \0"),
-            uptime / 86400,
-        );
-        sprintf(
-            uphours.as_ptr() as *mut c_char,
-            c_str("%dh \0"),
-            uptime % 86400 / 3600,
-        );
-        sprintf(
-            upmins.as_ptr() as *mut c_char,
-            c_str("%dm \0"),
-            uptime % 3600 / 60,
-        );
-        strcat(result.as_ptr() as *mut c_char, c_str("uptime \0"));
-        strcat(
             result.as_ptr() as *mut c_char,
+            c_str("uptime %s%s\0"),
             spaces_str.as_ptr() as CSTR,
+            time_str,
         );
-        if uptime / 86400 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&updays));
-        }
-        if uptime % 86400 / 3600 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&uphours));
-        }
-        strcat(result.as_ptr() as *mut c_char, c_str(&upmins));
     }
 
     c_str(&result)
@@ -137,10 +87,7 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
-
+    let spaces_str = utils::spaces(info_space);
     let file =
         unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
@@ -316,9 +263,7 @@ fn xbps() -> size_t {
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let spaces_str = utils::spaces(info_space);
 
     let mut distro_pkgs = 0;
 

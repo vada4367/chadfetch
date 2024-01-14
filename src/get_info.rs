@@ -28,7 +28,8 @@ mod bsd;
 mod linux;
 mod unix;
 
-const LEN_STRING: usize = 1;
+use crate::utils;
+use crate::utils::LEN_STRING;
 
 impl SystemFormat<'_> {
     pub fn get_system() -> Self {
