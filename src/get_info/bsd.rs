@@ -208,6 +208,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("pkgs %s%d\0"),
+            spaces_str.as_ptr() as CSTR,
             pkgs,
         );
     }
