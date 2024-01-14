@@ -44,6 +44,7 @@ impl SystemFormat<'_> {
         }
 
         // DELETE ALL "
+        /*
         let mut p = os_name;
         loop {
             // 34 IS "
@@ -53,6 +54,8 @@ impl SystemFormat<'_> {
             }
             unsafe { strcpy(p as *mut c_char, p.add(1)) };
         }
+        */
+        utils::delete_char(os_name, '"' as c_int);
 
         for system in ALL_SYSTEMS {
             if system.os == OS::BSD && system.os == os {
