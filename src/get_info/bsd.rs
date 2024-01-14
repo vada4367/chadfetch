@@ -64,10 +64,9 @@ pub fn uptime(
         return c_str("popen_error\0");
     }
 
-    let bt_output = [0; LEN_STRING + 100];
-    let bt;
-    let result = [0; LEN_STRING + 100];
-    let uptime;
+    let (bt_output, result) =
+        ([0; LEN_STRING + 100], [0; LEN_STRING + 100]);
+    let (bt, uptime);
 
     unsafe {
         fgets(
