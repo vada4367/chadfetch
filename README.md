@@ -13,13 +13,14 @@ SAFELY :P
 # Installation:
 
 ```
- git clone https://gitlab.com/vada4367/chadfetch.git
+cargo install
 ```
 ```
- cd chadfetch
+$HOME/.cargo/bin/chadfetch 
 ```
+or
 ```
- cargo run --release
+chadfetch
 ```
 
 
