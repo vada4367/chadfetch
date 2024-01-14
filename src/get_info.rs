@@ -9,12 +9,12 @@ use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
     getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    uname, CSTR, getrusage
+    uname, CSTR,
 };
 
 use libc::{
     c_char, c_int, c_void, size_t, sscanf, stat as stat_struct,
-    utsname, rusage,
+    utsname,
 };
 
 use crate::fetch_info::FetchInfo;
@@ -210,6 +210,9 @@ impl SystemFormat<'_> {
         match self.os {
             OS::Linux => {
                 return linux::memory(self, info_space);
+            }
+            OS::BSD => {
+                return bsd::memory(self, info_space);
             }
             _ => {
                 return c_str("unknown_os\0");

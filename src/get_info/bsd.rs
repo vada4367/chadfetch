@@ -63,16 +63,28 @@ pub fn memory(
     let spaces_str = &mut spaces[..info_space + 1];
     spaces_str[info_space] = 0 as c_char;
 
-    let mut usage = unsafe { MaybeUninit::<rusage>::uninit().assume_init() };
+    let physmem = unsafe {
+        popen(c_str("/sbin/sysctl -n hw.physmem\0"), c_str("r\0"))
+    };
+
+    if physmem.is_null() {
+        return c_str("popen_error\0");
+    }
+    let output = [0; LEN_STRING + 100];
+
     let result = [0; LEN_STRING];
     unsafe {
-        getrusage(0, &mut usage as *mut rusage);
-        let used = usage.ru_maxrss * 1024;
+        fgets(
+            pm_output.as_ptr() as *mut c_char,
+            (LEN_STRING + 100) as i32,
+            physmem,
+        );
+
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("memory %s%d\0"),
+            c_str("memory %s%s\0"),
             spaces_str.as_ptr() as CSTR,
-            used,
+            c_str(&pm_output),
         );
     }
 
