@@ -1,5 +1,5 @@
 use crate::libc::*;
-use ::libc::{size_t, c_char};
+use ::libc::{size_t, c_char, c_int};
 
 
 pub const LEN_STRING: usize = 1;
@@ -44,4 +44,15 @@ pub fn time(secs: size_t) -> CSTR {
         strcat(result.as_ptr() as *mut c_char, c_str(&upmins));
     }
     c_str(&result)
+}
+
+pub fn delete_char(c_str: CSTR, sym: c_int) {
+    let mut p = c_str;
+    loop {
+        p = unsafe { strchr(p, sym) };
+        if p == core::ptr::null() {
+            break;
+        }
+        unsafe { strcpy(p as *mut c_char, p.add(1)) };
+    }
 }

@@ -6,23 +6,23 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING];
     let spaces_str = utils::spaces(info_space);
 
-    let file_ptr = unsafe {
+    let hw_product = unsafe {
         popen(c_str("/sbin/sysctl -n hw.product\0"), c_str("r\0"))
     };
 
-    if file_ptr.is_null() {
+    if hw_product.is_null() {
         return c_str("popen_error\0");
     }
     let output = [0; LEN_STRING + 100];
 
-    let result = [0; LEN_STRING];
     unsafe {
         fgets(
             output.as_ptr() as *mut c_char,
             (LEN_STRING + 100) as i32,
-            file_ptr,
+            hw_product,
         );
         sprintf(
             result.as_ptr() as *mut c_char,
@@ -32,16 +32,7 @@ pub fn device(
         );
     }
 
-    // DELETE ALL \n
-    let mut p = result.as_ptr() as CSTR;
-    loop {
-        // 0x0a IS \n
-        p = unsafe { strchr(p, 0x0a as c_int) };
-        if p == core::ptr::null() {
-            break;
-        }
-        unsafe { strcpy(p as *mut c_char, p.add(1)) };
-    }
+    utils::delete_char(result.as_ptr() as CSTR, '\n' as c_int);
 
     c_str(&result)
 }
@@ -50,6 +41,7 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING];
     let spaces_str = utils::spaces(info_space);
 
     let boottime = unsafe {
@@ -63,8 +55,6 @@ pub fn uptime(
     let (bt_output, result) =
         ([0; LEN_STRING + 100], [0; LEN_STRING + 100]);
     let (bt, uptime);
-
-    let result = [0; LEN_STRING];
 
     unsafe {
         fgets(
@@ -92,6 +82,7 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING];
     let spaces_str = utils::spaces(info_space);
 
     let physmem = unsafe {
@@ -105,11 +96,10 @@ pub fn memory(
     }
     let pm_output = [0; LEN_STRING + 100];
     let vmstat_output = [0; LEN_STRING + 100];
-    let pm;
     let (mut _r, mut _s) = (0, 0);
     let mut avm = 0;
+    let pm;
 
-    let result = [0; LEN_STRING];
     unsafe {
         fgets(
             pm_output.as_ptr() as *mut c_char,
@@ -149,9 +139,8 @@ pub fn memory(
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let spaces_str = utils::spaces(info_space);
-
     let result = [0; LEN_STRING];
+    let spaces_str = utils::spaces(info_space);
 
     let mut dir;
     let d = unsafe { opendir(c_str("/var/db/pkg/\0")) };
