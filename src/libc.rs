@@ -9,9 +9,8 @@
 //
 
 use libc::{
-    c_char, c_int, c_void, dirent, passwd, size_t,
-    stat as stat_struct, uid_t, utsname, DIR, FILE,
-    c_longlong, time_t,
+    c_char, c_int, c_longlong, c_void, dirent, passwd, size_t,
+    stat as stat_struct, time_t, uid_t, utsname, DIR, FILE,
 };
 
 pub type CSTR = *const c_char;
@@ -55,7 +54,11 @@ extern "C" {
     pub fn opendir(dirname: *const c_char) -> *mut DIR;
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
     pub fn popen(command: CSTR, mode: CSTR) -> *mut FILE;
-    pub fn strtoll(s: CSTR, endp: *mut *mut c_char, base: c_int) -> c_longlong;
+    pub fn strtoll(
+        s: CSTR,
+        endp: *mut *mut c_char,
+        base: c_int,
+    ) -> c_longlong;
     pub fn time(time: *mut time_t) -> time_t;
 }
 
@@ -63,4 +66,3 @@ extern "C" {
 fn panic_handler(_: &core::panic::PanicInfo<'_>) -> ! {
     loop {}
 }
-

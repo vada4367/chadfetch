@@ -9,7 +9,7 @@ use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
     getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
     stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    uname, CSTR, strtoll, time,
+    strtoll, time, uname, CSTR,
 };
 
 use libc::{
@@ -199,6 +199,9 @@ impl SystemFormat<'_> {
         match self.os {
             OS::Linux => {
                 return linux::uptime(self, info_space);
+            }
+            OS::BSD => {
+                return bsd::uptime(self, info_space);
             }
             _ => {
                 return c_str("unknown_os\0");

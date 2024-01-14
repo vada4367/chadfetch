@@ -75,7 +75,8 @@ pub fn uptime(
             boottime,
         );
 
-        bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10) as size_t;
+        bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10)
+            as size_t;
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("uptime %s%d\0"),
@@ -98,9 +99,8 @@ pub fn memory(
     let physmem = unsafe {
         popen(c_str("/sbin/sysctl -n hw.physmem\0"), c_str("r\0"))
     };
-    let vmstat = unsafe {
-        popen(c_str("/usr/bin/vmstat\0"), c_str("r\0"))
-    };
+    let vmstat =
+        unsafe { popen(c_str("/usr/bin/vmstat\0"), c_str("r\0")) };
 
     if physmem.is_null() || vmstat.is_null() {
         return c_str("popen_error\0");
@@ -118,10 +118,17 @@ pub fn memory(
             (LEN_STRING + 100) as i32,
             physmem,
         );
-        pm = strtoll(c_str(&pm_output), core::ptr::null_mut(), 10) as size_t / 1024 / 1024;
+        pm = strtoll(c_str(&pm_output), core::ptr::null_mut(), 10)
+            as size_t
+            / 1024
+            / 1024;
 
         for _ in 0..3 {
-            fgets(vmstat_output.as_ptr() as *mut c_char, (LEN_STRING + 100) as i32, vmstat);
+            fgets(
+                vmstat_output.as_ptr() as *mut c_char,
+                (LEN_STRING + 100) as i32,
+                vmstat,
+            );
         }
         sscanf(
             c_str(&vmstat_output),
@@ -130,7 +137,6 @@ pub fn memory(
             &mut _s,
             &mut avm,
         );
-
 
         sprintf(
             result.as_ptr() as *mut c_char,
@@ -171,4 +177,3 @@ pub fn get_os_name() -> &'static str {
         ))
     }
 }
-
