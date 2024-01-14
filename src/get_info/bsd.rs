@@ -70,7 +70,8 @@ pub fn memory(
     if physmem.is_null() {
         return c_str("popen_error\0");
     }
-    let output = [0; LEN_STRING + 100];
+    let pm_output = [0; LEN_STRING + 100];
+    let mut pm = 0 as size_t;
 
     let result = [0; LEN_STRING];
     unsafe {
@@ -79,12 +80,17 @@ pub fn memory(
             (LEN_STRING + 100) as i32,
             physmem,
         );
+        sscanf(
+            c_str(&pm_output),
+            c_str("%d\0"),
+            pm as *mut size_t,
+        );
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("memory %s%s\0"),
+            c_str("memory %s%d\0"),
             spaces_str.as_ptr() as CSTR,
-            c_str(&pm_output),
+            pm,
         );
     }
 
