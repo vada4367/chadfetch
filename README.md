@@ -27,10 +27,12 @@ chadfetch
 # Support systems
 
 
- * Linux is most supported system. You can see all data, but
+## Linux 
+
+Linux is most supported system. You can see all data, but
 in mostly without packages and logo of your system. Logo and distro you can add in 
 src/logos.rs and src/all_systems.rs 
 
- * BSD:
+## BSD:
   - OpenBSD have full support
   - Other, idk, lol)) Check it!
