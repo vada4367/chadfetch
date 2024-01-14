@@ -1,6 +1,23 @@
 use libc::size_t;
 
 #[derive(Clone, Copy)]
+pub struct Colors {
+    pub main: size_t,
+    pub colorful: size_t,
+    pub colorless: size_t,
+}
+
+impl Colors {
+    pub fn new(c1: size_t, c2: size_t, c3: size_t) -> Self {
+        Colors {
+            main: c1,
+            colorful: c2,
+            colorless: c3,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
 pub struct FetchInfo {
     pub logo: bool,
     pub user_host: bool,
@@ -10,6 +27,7 @@ pub struct FetchInfo {
     pub uptime: bool,
     pub pkgs: bool,
     pub memory: bool,
+    pub colors: Colors,
 }
 
 impl FetchInfo {

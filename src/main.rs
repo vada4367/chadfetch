@@ -12,7 +12,7 @@ use crate::all_systems::SystemFormat;
 mod get_info;
 
 mod fetch_info;
-use fetch_info::FetchInfo;
+use fetch_info::{FetchInfo, Colors};
 
 mod utils;
 
@@ -29,6 +29,7 @@ fn main(_argc: *const CSTR, _argv: isize) -> isize {
         uptime: true,
         pkgs: true,
         memory: true,
+        colors: Colors::new(31usize, 32usize, 33usize),
     };
 
     system.print_fetch(settings);

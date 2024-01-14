@@ -17,7 +17,7 @@ use libc::{
     utsname,
 };
 
-use crate::fetch_info::FetchInfo;
+use crate::fetch_info::{ FetchInfo, Colors};
 
 use core::mem::MaybeUninit;
 use core::slice;
@@ -91,12 +91,12 @@ impl SystemFormat<'_> {
     }
 
     // INFO IS THE LINES AFTER LOGO
-    fn print_info(info: CSTR, space: i32) {
+    fn print_info(info: CSTR, space: i32, colors: Colors) {
         unsafe {
             // MOVE CURSOR TO END OF LOGO (X)
             printf(c_str("\x1B[%dC\0"), space + 4);
 
-            printf(c_str("%s\n\0"), info);
+            printf(c_str("\x1B[0;%dm%s\n\0"), colors.colorful, info);
         }
     }
 
@@ -112,7 +112,11 @@ impl SystemFormat<'_> {
         let mut count_of_info = 0;
 
         if settings.user_host {
-            Self::print_info(self.user_host(), print_space);
+            Self::print_info(
+                self.user_host(),
+                print_space,
+                settings.colors,
+            );
             count_of_info += 1;
         }
 
@@ -121,13 +125,18 @@ impl SystemFormat<'_> {
         let max_length = settings.max_length();
 
         if settings.os {
-            Self::print_info(self.os(max_length - 2), print_space);
+            Self::print_info(
+                self.os(max_length - 2),
+                print_space,
+                settings.colors,
+            );
             count_of_info += 1;
         }
         if settings.device {
             Self::print_info(
                 self.device(max_length - 4),
                 print_space,
+                settings.colors,
             );
             count_of_info += 1;
         }
@@ -135,6 +144,7 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.kernel(max_length - 6),
                 print_space,
+                settings.colors,
             );
             count_of_info += 1;
         }
@@ -142,17 +152,23 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.uptime(max_length - 6),
                 print_space,
+                settings.colors,
             );
             count_of_info += 1;
         }
         if settings.pkgs {
-            Self::print_info(self.pkgs(max_length - 4), print_space);
+            Self::print_info(
+                self.pkgs(max_length - 4),
+                print_space,
+                settings.colors,
+            );
             count_of_info += 1;
         }
         if settings.memory {
             Self::print_info(
                 self.memory(max_length - 6),
                 print_space,
+                settings.colors,
             );
             count_of_info += 1;
         }
