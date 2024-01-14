@@ -33,7 +33,7 @@ pub fn device(
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("host %s%s %s\0"),
-            spaces_str,
+            spaces_str.as_ptr() as CSTR,
             c_str(&name_str),
             c_str(&version_str),
         );

@@ -1,7 +1,7 @@
 use crate::libc::*;
 use ::libc::{c_char, size_t};
 
-pub const LEN_STRING: usize = 128;
+pub const LEN_STRING: usize = 16;
 
 pub fn spaces(info_space: size_t) -> [c_char; 20] {
     let mut spaces = [0x20 as c_char; 20];
@@ -11,11 +11,11 @@ pub fn spaces(info_space: size_t) -> [c_char; 20] {
 }
 
 pub fn time(secs: size_t) -> CSTR {
-    let result = [0 as c_char; LEN_STRING + 128];
+    let result = [0 as c_char; LEN_STRING];
 
-    let updays = [0 as c_char; LEN_STRING + 32];
-    let uphours = [0 as c_char; LEN_STRING + 32];
-    let upmins = [0 as c_char; LEN_STRING + 32];
+    let updays = [0 as c_char; LEN_STRING];
+    let uphours = [0 as c_char; LEN_STRING];
+    let upmins = [0 as c_char; LEN_STRING];
 
     unsafe {
         sprintf(
