@@ -88,15 +88,14 @@ pub fn memory(
         );
         pm = strtoll(c_str(&pm_output), core::ptr::null_mut(), 10) as size_t / 1024 / 1024;
 
-        for _ in 0..2 {
-            fgets(core::ptr::null_mut(), 0, vmstat);
+        for _ in 0..3 {
+            fgets(vmstat_output.as_ptr() as *mut c_char, (LEN_STRING + 100) as i32, vmstat);
         }
-        fgets(vmstat_output.as_ptr() as *mut c_char, (LEN_STRING + 100) as i32, vmstat);
         sscanf(
             c_str(&vmstat_output),
-            c_str("%d %d %d\0"),
-            _r,
-            _s,
+            c_str("%d %d  %d\0"),
+            &mut _r,
+            &mut _s,
             &mut avm,
         );
 
