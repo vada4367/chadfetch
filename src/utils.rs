@@ -36,13 +36,14 @@ pub fn time(secs: size_t) -> CSTR {
         );
 
         if secs / 86400 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&updays));
+            strcat(result.as_ptr() as *mut c_char, updays.as_ptr() as CSTR);
         }
         if secs % 86400 / 3600 != 0 {
-            strcat(result.as_ptr() as *mut c_char, c_str(&uphours));
+            strcat(result.as_ptr() as *mut c_char, uphours.as_ptr() as CSTR);
         }
-        strcat(result.as_ptr() as *mut c_char, c_str(&upmins));
+        strcat(result.as_ptr() as *mut c_char, upmins.as_ptr() as CSTR);
     }
+
     c_str(&result)
 }
 
