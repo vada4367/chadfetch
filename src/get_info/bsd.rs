@@ -66,7 +66,8 @@ pub fn uptime(
 
     let bt_output = [0; LEN_STRING + 100];
     let bt;
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 100];
+    let uptime;
 
     unsafe {
         fgets(
@@ -77,12 +78,41 @@ pub fn uptime(
 
         bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10)
             as size_t;
+        uptime = time(core::ptr::null_mut()) as size_t - bt;
+    }
+
+    let updays = [0; LEN_STRING + 64];
+    let uphours = [0; LEN_STRING + 5];
+    let upmins = [0; LEN_STRING + 5];
+
+    unsafe {
         sprintf(
-            result.as_ptr() as *mut c_char,
-            c_str("uptime %s%d\0"),
-            spaces_str.as_ptr() as CSTR,
-            time(core::ptr::null_mut()) as size_t - bt,
+            updays.as_ptr() as *mut c_char,
+            c_str("%dd \0"),
+            uptime / 86400,
         );
+        sprintf(
+            uphours.as_ptr() as *mut c_char,
+            c_str("%dh \0"),
+            uptime % 86400 / 3600,
+        );
+        sprintf(
+            upmins.as_ptr() as *mut c_char,
+            c_str("%dm \0"),
+            uptime % 3600 / 60,
+        );
+        strcat(result.as_ptr() as *mut c_char, c_str("uptime \0"));
+        strcat(
+            result.as_ptr() as *mut c_char,
+            spaces_str.as_ptr() as CSTR,
+        );
+        if uptime / 86400 != 0 {
+            strcat(result.as_ptr() as *mut c_char, c_str(&updays));
+        }
+        if uptime % 86400 / 3600 != 0 {
+            strcat(result.as_ptr() as *mut c_char, c_str(&uphours));
+        }
+        strcat(result.as_ptr() as *mut c_char, c_str(&upmins));
     }
 
     c_str(&result)
