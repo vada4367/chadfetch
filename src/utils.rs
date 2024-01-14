@@ -12,9 +12,9 @@ pub fn spaces(info_space: size_t) -> [c_char; 20] {
 }
 
 pub fn time(secs: size_t) -> CSTR {
-    let result = [0 as c_char; LEN_STRING + 130];
+    let result = [0 as c_char; LEN_STRING + 128];
 
-    let updays = [0 as c_char; LEN_STRING + 64];
+    let updays = [0 as c_char; LEN_STRING + 32];
     let uphours = [0 as c_char; LEN_STRING + 32];
     let upmins = [0 as c_char; LEN_STRING + 32];
 
