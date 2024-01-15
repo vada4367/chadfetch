@@ -25,6 +25,7 @@ use core::slice;
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
 mod bsd;
+mod linux_pkgs;
 mod linux;
 mod unix;
 
@@ -103,6 +104,9 @@ impl SystemFormat<'_> {
     fn print_all_info(&self, settings: FetchInfo) -> i32 {
         let mut print_space = -4;
 
+        // PRINT_SPACE IS VARIABLE FOR 
+        // MAKE PLACE DATA STRINGS AFTER
+        // LOGO
         if settings.logo {
             print_space = self.logo.w as i32;
         }
@@ -191,7 +195,6 @@ impl SystemFormat<'_> {
             }
             OS::BSD => {
                 return bsd::device(self, info_space);
-                //return c_str("unknown\0");
             }
             _ => {
                 return c_str("unknown_os\0");
