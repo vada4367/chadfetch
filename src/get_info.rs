@@ -96,7 +96,7 @@ impl SystemFormat<'_> {
             // MOVE CURSOR TO END OF LOGO (X)
             printf(c_str("\x1B[%dC\0"), space + 4);
 
-            printf(c_str("\x1B[0;%dm%s\n\0"), colors.colorful, info);
+            printf(c_str("%s\n\0"), info);
         }
     }
 
