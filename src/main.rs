@@ -21,13 +21,13 @@ fn main(_argc: *const CSTR, _argv: isize) -> isize {
     let system = SystemFormat::get_system();
 
     let settings = FetchInfo {
-        logo: true,
-        user_host: true,
-        os: true,
-        device: true,
+        logo: true, // YES
+        user_host: true, // YES
+        os: true, // YES 
+        device: true, // YES
         kernel: true,
         uptime: true,
-        pkgs: true,
+        pkgs: true, // YES
         memory: true,
         colors: Colors::new(31usize, 32usize, 33usize),
     };

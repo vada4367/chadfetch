@@ -23,7 +23,7 @@ pub fn device(
         }
     }
 
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 1];
     let name_str = [0; LEN_STRING];
     let version_str = [0; LEN_STRING];
 

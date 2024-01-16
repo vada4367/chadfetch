@@ -1,7 +1,7 @@
 use crate::libc::*;
 use ::libc::{c_char, size_t};
 
-pub const LEN_STRING: usize = 16;
+pub const LEN_STRING: usize = 1;
 
 pub fn spaces(info_space: size_t) -> [c_char; 20] {
     let mut spaces = [0x20 as c_char; 20];
