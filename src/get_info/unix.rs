@@ -4,14 +4,17 @@ pub fn user_host(sys_format: &SystemFormat) -> CSTR {
     let user = unsafe { (*getpwuid(geteuid())).pw_name };
     let hostname = unsafe { malloc(40) } as *mut c_char;
 
-    let result: [c_char; LEN_STRING] = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 64];
 
     unsafe {
         gethostname(hostname, LEN_STRING + 39);
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("%s@%s\0"),
+            c_str("\x1B[0;%dm%s\x1B[0;%dm@\x1B[0;%dm%s\0"),
+            sys_format.palette.contrast,
             user,
+            sys_format.palette.text,
+            sys_format.palette.contrast,
             hostname as CSTR,
         );
     }
@@ -20,31 +23,29 @@ pub fn user_host(sys_format: &SystemFormat) -> CSTR {
 }
 
 pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
+    let mut spaces_str = utils::spaces(info_space);
 
-    let result = [0; LEN_STRING + 16];
+    let result = [0; LEN_STRING];
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("os %s%s\0"),
+            c_str("\x1B[0;%dos %s \x1B[0;%d %s\0"),
+            sys_format.palette.text,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             c_str(sys_format.name),
         );
     }
 
-    c_str(&result)
+    result.as_ptr() as CSTR
 }
 
 pub fn kernel(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let mut spaces = [0x20 as c_char; LEN_STRING + 100];
-    let spaces_str = &mut spaces[..info_space + 1];
-    spaces_str[info_space] = 0 as c_char;
-    let result = [0; LEN_STRING + 16];
+    let mut spaces_str = utils::spaces(info_space);
+    let result = [0; LEN_STRING + 100];
 
     let mut name =
         unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
@@ -54,8 +55,10 @@ pub fn kernel(
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("kernel %s%s %s\0"),
+            c_str("\x1B[0;%dkernel %s\x1B[0;%d%s %s\0"),
+            sys_format.palette.text,
             spaces_str.as_ptr() as *const c_char,
+            sys_format.palette.text,
             c_str(&name.sysname),
             c_str(&name.release),
         );

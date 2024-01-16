@@ -17,7 +17,7 @@ use libc::{
     utsname,
 };
 
-use crate::fetch_info::{ FetchInfo, Colors};
+use crate::fetch_info::FetchInfo;
 
 use core::mem::MaybeUninit;
 use core::slice;
@@ -92,7 +92,7 @@ impl SystemFormat<'_> {
     }
 
     // INFO IS THE LINES AFTER LOGO
-    fn print_info(info: CSTR, space: i32, colors: Colors) {
+    fn print_info(info: CSTR, space: i32) {
         unsafe {
             // MOVE CURSOR TO END OF LOGO (X)
             printf(c_str("\x1B[%dC\0"), space + 4);
@@ -119,7 +119,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.user_host(),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -132,7 +131,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.os(max_length - 2),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -140,7 +138,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.device(max_length - 4),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -148,7 +145,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.kernel(max_length - 6),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -156,7 +152,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.uptime(max_length - 6),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -164,7 +159,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.pkgs(max_length - 4),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }
@@ -172,7 +166,6 @@ impl SystemFormat<'_> {
             Self::print_info(
                 self.memory(max_length - 6),
                 print_space,
-                settings.colors,
             );
             count_of_info += 1;
         }

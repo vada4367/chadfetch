@@ -5,6 +5,7 @@ mod libc;
 use libc::CSTR;
 
 mod logos;
+mod palette;
 
 mod all_systems;
 use crate::all_systems::SystemFormat;
@@ -12,7 +13,7 @@ use crate::all_systems::SystemFormat;
 mod get_info;
 
 mod fetch_info;
-use fetch_info::{FetchInfo, Colors};
+use fetch_info::FetchInfo;
 
 mod utils;
 
@@ -21,15 +22,14 @@ fn main(_argc: *const CSTR, _argv: isize) -> isize {
     let system = SystemFormat::get_system();
 
     let settings = FetchInfo {
-        logo: true, // YES
-        user_host: true, // YES
-        os: true, // YES 
-        device: true, // YES
+        logo: true,
+        user_host: true,
+        os: true,
+        device: true,
         kernel: true,
         uptime: true,
-        pkgs: true, // YES
+        pkgs: true,
         memory: true,
-        colors: Colors::new(31usize, 32usize, 33usize),
     };
 
     system.print_fetch(settings);

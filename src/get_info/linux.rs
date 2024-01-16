@@ -4,7 +4,9 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
+
 
     let (name, version);
     unsafe {
@@ -23,7 +25,6 @@ pub fn device(
         }
     }
 
-    let result = [0; LEN_STRING + 1];
     let name_str = [0; LEN_STRING];
     let version_str = [0; LEN_STRING];
 
@@ -32,8 +33,10 @@ pub fn device(
         fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("\x1B[0;33mhost %s%s %s\0"),
+            c_str("\x1B[0;%dmhost %s\x1B[0;%dm%s %s\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             c_str(&name_str),
             c_str(&version_str),
         );
@@ -46,11 +49,11 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING + 100];
     let spaces_str = utils::spaces(info_space);
 
     let file =
         unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
-    let result = [0; LEN_STRING + 100];
 
     if file == core::ptr::null_mut() {
         return c_str("uptime\0");
@@ -73,8 +76,10 @@ pub fn uptime(
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("uptime %s%s\0"),
+            c_str("\x1B[0;%dmuptime %s\x1B[0;%dm%s\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             time_str,
         );
     }
@@ -86,18 +91,19 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
     let file =
         unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
     if file == core::ptr::null_mut() {
         unsafe {
-            let result = [0; LEN_STRING + 16];
-
             sprintf(
                 result.as_ptr() as *mut c_char,
-                c_str("memory %sunknown\0"),
+                c_str("\x1B[0;%dmmemory %s\x1B[0;%dmunknown\0"),
+                sys_format.palette.vars,
                 spaces_str.as_ptr() as CSTR,
+                sys_format.palette.text,
             );
 
             return c_str(&result);
@@ -187,12 +193,13 @@ pub fn memory(
     mem_available =
         mem_free + buffers + cached + s_reclaimable - sh_mem;
 
-    let result = [0; LEN_STRING + 16];
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("memory %s%dM / %dM\0"),
+            c_str("\x1B[0;%dmmemory %s\x1B[0;%dm%dM / %dM\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             (mem_total - mem_available) / 1024,
             mem_total / 1024,
         );
@@ -216,8 +223,10 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("pkgs %s%d \0"),
+            c_str("\x1B[0;%dmpkgs %s\x1B[0;%dm%d \0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             distro_pkgs,
         );
 
