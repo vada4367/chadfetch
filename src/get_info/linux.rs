@@ -92,7 +92,7 @@ pub fn memory(
 
     if file == core::ptr::null_mut() {
         unsafe {
-            let result = [0; LEN_STRING];
+            let result = [0; LEN_STRING + 16];
 
             sprintf(
                 result.as_ptr() as *mut c_char,
@@ -187,7 +187,7 @@ pub fn memory(
     mem_available =
         mem_free + buffers + cached + s_reclaimable - sh_mem;
 
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,

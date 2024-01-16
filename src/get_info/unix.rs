@@ -24,7 +24,7 @@ pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let spaces_str = &mut spaces[..info_space + 1];
     spaces_str[info_space] = 0 as c_char;
 
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
@@ -44,7 +44,7 @@ pub fn kernel(
     let mut spaces = [0x20 as c_char; LEN_STRING + 100];
     let spaces_str = &mut spaces[..info_space + 1];
     spaces_str[info_space] = 0 as c_char;
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
 
     let mut name =
         unsafe { MaybeUninit::<utsname>::uninit().assume_init() };

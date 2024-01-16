@@ -6,7 +6,7 @@ pub fn device(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
     let hw_product = unsafe {
@@ -26,7 +26,7 @@ pub fn device(
         );
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("host %s%s\0"),
+            c_str("\x1B[0;33mhost %s%s\0"),
             spaces_str.as_ptr() as CSTR,
             c_str(&output),
         );
@@ -41,7 +41,7 @@ pub fn uptime(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
     let boottime = unsafe {
@@ -82,7 +82,7 @@ pub fn memory(
     sys_format: &SystemFormat,
     info_space: size_t,
 ) -> CSTR {
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
     let physmem = unsafe {
@@ -139,7 +139,7 @@ pub fn memory(
 }
 
 pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
     let mut dir;
@@ -172,7 +172,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 }
 
 pub fn get_os_name() -> &'static str {
-    let result = [0; LEN_STRING];
+    let result = [0; LEN_STRING + 16];
 
     let mut name =
         unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
