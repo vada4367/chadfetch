@@ -9,6 +9,9 @@ pub fn device(
 
 
     let (name, version);
+    let name_str = [0; LEN_STRING];
+    let version_str = [0; LEN_STRING];
+
     unsafe {
         name = fopen(
             c_str("/sys/devices/virtual/dmi/id/product_name\0"),
@@ -18,19 +21,15 @@ pub fn device(
             c_str("/sys/devices/virtual/dmi/id/product_version\0"),
             c_str("r\0"),
         );
-        if name == core::ptr::null_mut()
-            || version == core::ptr::null_mut()
+        if !(name == core::ptr::null_mut()
+            || version == core::ptr::null_mut())
         {
-            return c_str("host\0");
+            fscanf(name, c_str("%s\n\0"), c_str(&name_str));
+            fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         }
     }
 
-    let name_str = [0; LEN_STRING];
-    let version_str = [0; LEN_STRING];
-
     unsafe {
-        fscanf(name, c_str("%s\n\0"), c_str(&name_str));
-        fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         sprintf(
             result.as_ptr() as *mut c_char,
             c_str("\x1B[0;%dmhost %s\x1B[0;%dm%s %s\0"),
@@ -55,23 +54,22 @@ pub fn uptime(
     let file =
         unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
 
-    if file == core::ptr::null_mut() {
-        return c_str("uptime\0");
-    }
-
     let mut line = [0; LEN_STRING + 30];
     let (mut uptime, mut _uptime) = (0, 0);
-    unsafe {
-        fgets(line.as_mut_ptr(), line.len() as c_int, file);
-        sscanf(
-            c_str(&line),
-            c_str("%d %d\0"),
-            &mut uptime,
-            &mut _uptime,
-        );
-    }
 
-    let time_str = utils::time(uptime);
+    if file != core::ptr::null_mut() {
+        unsafe {
+            fgets(line.as_mut_ptr(), line.len() as c_int, file);
+            sscanf(
+                c_str(&line),
+                c_str("%d %d\0"),
+                &mut uptime,
+                &mut _uptime,
+            );
+        }
+    } else { uptime = 0; }
+
+    
 
     unsafe {
         sprintf(
@@ -80,7 +78,7 @@ pub fn uptime(
             sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
             sys_format.palette.text,
-            time_str,
+            utils::time(uptime),
         );
     }
 

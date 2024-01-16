@@ -11,45 +11,33 @@ pub fn spaces(info_space: size_t) -> [c_char; 20] {
 }
 
 pub fn time(secs: size_t) -> CSTR {
-    let result = [0 as c_char; LEN_STRING + 16];
-
-    let updays = [0 as c_char; LEN_STRING + 4];
-    let uphours = [0 as c_char; LEN_STRING + 4];
-    let upmins = [0 as c_char; LEN_STRING + 4];
+    let result = [0 as c_char; LEN_STRING + 1024];
 
     unsafe {
-        sprintf(
-            updays.as_ptr() as *mut c_char,
-            c_str("%dd \0"),
-            secs / 86400,
-        );
-        sprintf(
-            uphours.as_ptr() as *mut c_char,
-            c_str("%dh \0"),
-            secs % 86400 / 3600,
-        );
-        sprintf(
-            upmins.as_ptr() as *mut c_char,
-            c_str("%dm \0"),
-            secs % 3600 / 60,
-        );
-
         if secs / 86400 != 0 {
-            strcat(
+            sprintf(
                 result.as_ptr() as *mut c_char,
-                updays.as_ptr() as CSTR,
+                c_str("%dd %dh %dm\0"),
+                secs / 86400,
+                secs % 86400 / 3600,
+                secs % 3600 / 60,
             );
         }
-        if secs % 86400 / 3600 != 0 {
-            strcat(
+        else if secs % 86400 / 3600 != 0 {
+            sprintf(
                 result.as_ptr() as *mut c_char,
-                uphours.as_ptr() as CSTR,
+                c_str("%dh %dm\0"),
+                secs / 3600,
+                secs % 3600 / 60,
             );
         }
-        strcat(
-            result.as_ptr() as *mut c_char,
-            upmins.as_ptr() as CSTR,
-        );
+        else {
+            sprintf(
+                result.as_ptr() as *mut c_char,
+                c_str("%dm\0"),
+                secs / 60,
+            );
+        }
     }
 
     c_str(&result)
