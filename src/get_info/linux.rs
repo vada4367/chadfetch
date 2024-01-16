@@ -32,7 +32,7 @@ pub fn device(
         fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("host %s%s %s\0"),
+            c_str("\x1B[0;33mhost %s%s %s\0"),
             spaces_str.as_ptr() as CSTR,
             c_str(&name_str),
             c_str(&version_str),
