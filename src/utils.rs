@@ -11,7 +11,7 @@ pub fn spaces(info_space: size_t) -> [c_char; 20] {
 }
 
 pub fn time(secs: size_t) -> CSTR {
-    let result = [0 as c_char; LEN_STRING + 1024];
+    let result = [0; LEN_STRING + 16];
 
     unsafe {
         if secs / 86400 != 0 {
@@ -40,7 +40,7 @@ pub fn time(secs: size_t) -> CSTR {
         }
     }
 
-    c_str(&result)
+    result.as_ptr() as CSTR
 }
 
 macro_rules! delete_char {
