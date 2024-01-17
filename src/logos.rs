@@ -28,12 +28,12 @@ pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
    TH AA ${c2}sAFE${c9} A U
    \ ___  _   A
     M___3^   A #
-    [    EAIV   # 
+    [    EAIV   #
      _____}
 "#,
         "\0"
     ),
-    19,
+    17,
     10,
 );
 
