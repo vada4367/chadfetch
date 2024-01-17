@@ -27,8 +27,8 @@ pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
    ${c2}FETCH${c9}  RL    U
    |  #    YKSA
    T-IIA ${c2}sAFE${c9} A U
-   \.____..  /--/
-    [=-u^  #/| \
+   \  ___ T /--/
+    L*-=^ ^#/| \
     AMPERSAND .W\
      %#####% .;i&} 
 "#,
