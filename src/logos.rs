@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use libc::size_t;
 
 #[derive(Clone, Copy)]
@@ -24,7 +25,7 @@ pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
     VT       FGV
     U ${c2}CHAD${c9}     AV
    ${c2}FETCH${c9}  RL    U
-   |U>  (U>- YKSA
+   |  #    YKSA
    TH AA ${c2}sAFE${c9} A U
    \ ___  _   A
     M___3^   A #
