@@ -1,6 +1,6 @@
 [package]
 name = "chadfetch"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = ["Vadim Wagner <gidra4367@protonmail.com>"]
 description = "Console utilite for watch info about your system"
@@ -11,11 +11,11 @@ license-file = "LICENSE"
 
 [profile.release]
 debug = false
-#strip = true
 opt-level = 'z'
 codegen-units = 1
 lto = true
 panic = 'abort'
+#strip = true
 
 
 [profile.dev]
