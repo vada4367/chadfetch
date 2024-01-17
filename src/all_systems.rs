@@ -40,7 +40,7 @@ impl SystemFormat<'_> {
 pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
     SystemFormat::new(
         OS::Linux,
-        UNKNOWN_LINUX_LOGO,
+        GIGACHAD_LOGO,
         "Unknown\0",
         VOID_PALETTE,
         0,
@@ -54,7 +54,7 @@ pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
     ),
     SystemFormat::new(
         OS::BSD,
-        OPENBSD_LOGO,
+        GIGACHAD_LOGO,
         "OpenBSD\0",
         VOID_PALETTE,
         0,

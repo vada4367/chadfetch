@@ -17,18 +17,18 @@ impl Logo<'_> {
     }
 }
 
-pub const UNKNOWN_LINUX_LOGO: Logo<'_> = Logo::new(
+pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
      ________
     VT       FGV
-    U ${c1}CHAD${c0}     AV
-   ${c1}FETCH${c0}  RL    U
+    U ${c2}CHAD${c9}     AV
+   ${c2}FETCH${c9}  RL    U
    S  A  YKSA  AH
-   TH AA ${c1}sAFE${c0} A U
-   \  _ _   A   J>
-    | __*   A   P  
-    M        AX 
+   TH AA ${c2}sAFE${c9} A U
+   \_ _ _   A   J>
+    |##-*   A   P  
+    M  .     AX 
     [    EAIV    
      -----         
 "#,
