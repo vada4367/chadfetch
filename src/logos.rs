@@ -18,6 +18,13 @@ impl Logo<'_> {
     }
 }
 
+
+// FOR CREATE YOUR LOGO, 
+// YOU WRITE LOGO TEXT 
+// AND WIDTH & HEIGHT
+// IN CONST WITH NAME 
+// WHICH YOU WOULD LIKE
+
 pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"

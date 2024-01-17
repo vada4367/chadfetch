@@ -12,6 +12,14 @@ pub struct FetchInfo {
     pub memory: bool,
 }
 
+//
+// FUNCTION max_length FOR 
+// MAKE RIGHT SPACES NAME AND 
+// DATA. Example:
+//
+// os <-----> Linux
+// uptime <-> 3h 20m
+//
 impl FetchInfo {
     pub fn max_length(self) -> size_t {
         if self.kernel || self.uptime || self.memory {

@@ -17,4 +17,11 @@ impl Palette {
     }
 }
 
+
+// FOR CREATE YOUR PALETTE 
+// MAKE CONST WITH NAME WHICH 
+// YOU WOULD LIKE, AND IN 
+// ARGUMENTS FOR FUNCTION 
+// WRITE !ANSI! COLORS
+
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);
