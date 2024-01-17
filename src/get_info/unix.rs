@@ -40,11 +40,15 @@ pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     result.as_ptr() as CSTR
 }
 
-pub fn kernel(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+pub fn kernel(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+    let mut name =
+        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
 
     unsafe {
         uname(&mut name);
@@ -64,7 +68,8 @@ pub fn kernel(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 }
 
 pub fn get_os() -> OS {
-    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+    let mut name =
+        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
 
     unsafe {
         uname(&mut name);

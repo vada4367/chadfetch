@@ -30,7 +30,11 @@ pub fn time(secs: size_t) -> CSTR {
                 secs % 3600 / 60,
             );
         } else {
-            sprintf(result.as_ptr() as *mut c_char, c_str("%dm\0"), secs / 60);
+            sprintf(
+                result.as_ptr() as *mut c_char,
+                c_str("%dm\0"),
+                secs / 60,
+            );
         }
     }
 

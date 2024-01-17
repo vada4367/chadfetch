@@ -38,7 +38,25 @@ impl SystemFormat<'_> {
 }
 
 pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
-    SystemFormat::new(OS::Linux, UNKNOWN_LINUX_LOGO, "Unknown\0", VOID_PALETTE, 0),
-    SystemFormat::new(OS::Linux, VOID_LOGO, "Void\0", VOID_PALETTE, 0),
-    SystemFormat::new(OS::BSD, OPENBSD_LOGO, "OpenBSD\0", VOID_PALETTE, 0),
+    SystemFormat::new(
+        OS::Linux,
+        UNKNOWN_LINUX_LOGO,
+        "Unknown\0",
+        VOID_PALETTE,
+        0,
+    ),
+    SystemFormat::new(
+        OS::Linux,
+        VOID_LOGO,
+        "Void\0",
+        VOID_PALETTE,
+        0,
+    ),
+    SystemFormat::new(
+        OS::BSD,
+        OPENBSD_LOGO,
+        "OpenBSD\0",
+        VOID_PALETTE,
+        0,
+    ),
 ];

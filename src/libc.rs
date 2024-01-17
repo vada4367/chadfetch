@@ -1,4 +1,4 @@
-#![allow(deprecated)]
+#![allow(deprecated, dead_code)]
 
 //
 // THIS FILE IS INTENDED TO SOLUTION
@@ -9,8 +9,8 @@
 //
 
 use libc::{
-    c_char, c_int, c_longlong, c_void, dirent, passwd, size_t, stat as stat_struct, time_t, uid_t,
-    utsname, DIR, FILE,
+    c_char, c_int, c_longlong, c_void, dirent, passwd, size_t,
+    stat as stat_struct, time_t, uid_t, utsname, DIR, FILE,
 };
 
 pub type CSTR = *const c_char;
@@ -29,19 +29,36 @@ extern "C" {
     pub fn strcat(s: *mut c_char, ct: CSTR);
     pub fn gethostname(name: *mut c_char, len: size_t) -> c_int;
     pub fn uname(buf: *mut utsname) -> c_int;
-    pub fn sprintf(s: *mut c_char, format: *const c_char, ...) -> c_int;
+    pub fn sprintf(
+        s: *mut c_char,
+        format: *const c_char,
+        ...
+    ) -> c_int;
     pub fn strcpy(dst: *mut c_char, src: CSTR) -> *mut c_char;
     pub fn strchr(cs: CSTR, c: c_int) -> *mut c_char;
     pub fn strlen(cs: CSTR) -> size_t;
     pub fn strstr(cs: CSTR, ct: CSTR) -> *mut c_char;
-    pub fn fread(ptr: *mut c_void, size: size_t, nobj: size_t, stream: *mut FILE) -> size_t;
+    pub fn fread(
+        ptr: *mut c_void,
+        size: size_t,
+        nobj: size_t,
+        stream: *mut FILE,
+    ) -> size_t;
     pub fn malloc(size: size_t) -> *mut c_void;
     pub fn stat(path: CSTR, buf: *mut stat_struct) -> c_int;
-    pub fn fgets(buf: *mut c_char, n: c_int, stream: *mut FILE) -> *mut c_char;
+    pub fn fgets(
+        buf: *mut c_char,
+        n: c_int,
+        stream: *mut FILE,
+    ) -> *mut c_char;
     pub fn opendir(dirname: *const c_char) -> *mut DIR;
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
     pub fn popen(command: CSTR, mode: CSTR) -> *mut FILE;
-    pub fn strtoll(s: CSTR, endp: *mut *mut c_char, base: c_int) -> c_longlong;
+    pub fn strtoll(
+        s: CSTR,
+        endp: *mut *mut c_char,
+        base: c_int,
+    ) -> c_longlong;
     pub fn time(time: *mut time_t) -> time_t;
 }
 

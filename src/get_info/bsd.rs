@@ -2,11 +2,16 @@
 
 use crate::get_info::*;
 
-pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+pub fn device(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let hw_product = unsafe { popen(c_str("/sbin/sysctl -n hw.product\0"), c_str("r\0")) };
+    let hw_product = unsafe {
+        popen(c_str("/sbin/sysctl -n hw.product\0"), c_str("r\0"))
+    };
 
     if hw_product.is_null() {
         return c_str("popen_error\0");
@@ -32,17 +37,23 @@ pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+pub fn uptime(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let boottime = unsafe { popen(c_str("/sbin/sysctl -n kern.boottime\0"), c_str("r\0")) };
+    let boottime = unsafe {
+        popen(c_str("/sbin/sysctl -n kern.boottime\0"), c_str("r\0"))
+    };
 
     if boottime.is_null() {
         return c_str("popen_error\0");
     }
 
-    let (bt_output, result) = ([0; LEN_STRING + 100], [0; LEN_STRING + 100]);
+    let (bt_output, result) =
+        ([0; LEN_STRING + 100], [0; LEN_STRING + 100]);
     let (bt, uptime);
 
     unsafe {
@@ -52,7 +63,8 @@ pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
             boottime,
         );
 
-        bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10) as size_t;
+        bt = strtoll(c_str(&bt_output), core::ptr::null_mut(), 10)
+            as size_t;
         uptime = time(core::ptr::null_mut()) as size_t - bt;
 
         sprintf(
@@ -66,12 +78,18 @@ pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     c_str(&result)
 }
 
-pub fn memory(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
+pub fn memory(
+    sys_format: &SystemFormat,
+    info_space: size_t,
+) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let physmem = unsafe { popen(c_str("/sbin/sysctl -n hw.physmem\0"), c_str("r\0")) };
-    let vmstat = unsafe { popen(c_str("/usr/bin/vmstat\0"), c_str("r\0")) };
+    let physmem = unsafe {
+        popen(c_str("/sbin/sysctl -n hw.physmem\0"), c_str("r\0"))
+    };
+    let vmstat =
+        unsafe { popen(c_str("/usr/bin/vmstat\0"), c_str("r\0")) };
 
     if physmem.is_null() || vmstat.is_null() {
         return c_str("popen_error\0");
@@ -88,7 +106,10 @@ pub fn memory(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
             (LEN_STRING + 100) as i32,
             physmem,
         );
-        pm = strtoll(c_str(&pm_output), core::ptr::null_mut(), 10) as size_t / 1024 / 1024;
+        pm = strtoll(c_str(&pm_output), core::ptr::null_mut(), 10)
+            as size_t
+            / 1024
+            / 1024;
 
         for _ in 0..3 {
             fgets(
@@ -153,7 +174,8 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 pub fn get_os_name() -> &'static str {
     let result = [0; LEN_STRING + 16];
 
-    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+    let mut name =
+        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
 
     unsafe {
         uname(&mut name);
