@@ -54,7 +54,7 @@ pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
 pub const VOID_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-    _______
+    ${c3}_______
  _ \______ -
 | \  ___  \ |
 | | /   \ | |

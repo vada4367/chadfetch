@@ -74,20 +74,41 @@ impl SystemFormat<'_> {
 
             if settings.logo {
                 dy = self.logo.h as i32;
-                printf(c_str("%s\n\0"), self.logo.logo);
+                
+                let logo_chars = slice::from_raw_parts(c_str(self.logo.logo) as *const u8, strlen(c_str(self.logo.logo)) + 1);
+
+                let mut i: usize = 0;
+                let mut checking = false;
+
+                while logo_chars[i] != 0 {
+                    if logo_chars[i] == b'$' {
+                        checking = true;
+                    }
+                    if checking && logo_chars[i] > 50 && logo_chars[i] < 60 {
+                        printf(c_str("\x1B[0;%dm\0"), logo_chars[i] as c_int - 20);
+                    }
+                    if !checking {
+                        printf(c_str("%c\0"), logo_chars[i] as c_int);
+                    }
+                    if checking && logo_chars[i] == b'}' {
+                        checking = false;
+                    }
+
+                    i += 1;
+                }
             }
 
             // MOVE THE CURSOR TO
             // THE BEGGINNING OF
             // THE OUTPUT
-            printf(c_str("\x1B[%dA\0"), dy + 1);
+            printf(c_str("\x1B[%dA\0"), dy);
 
             // DY IS LEN (Y) OF LOGO
             dy -= self.print_all_info(settings);
 
             // MOVE THE CURSOR TO
             // THE END OF THE OUTPUT
-            printf(c_str("\x1B[%dB\0"), dy + 1);
+            printf(c_str("\x1B[%dB\0"), dy);
         }
     }
 
