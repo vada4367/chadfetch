@@ -10,7 +10,6 @@ pub enum OS {
     Unknown,
 }
 
-
 #[derive(Clone, Copy)]
 pub struct SystemFormat<'a> {
     pub os: OS,

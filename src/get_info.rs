@@ -1,21 +1,12 @@
-#![allow(
-    unreachable_patterns,
-    unused_variables,
-    unused_imports,
-    invalid_value
-)]
+#![allow(unreachable_patterns, unused_variables, unused_imports, invalid_value)]
 
 use crate::libc::{
-    c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
-    getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
-    stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    strtoll, time, uname, CSTR,
+    c_str, fgets, fopen, fread, fscanf, geteuid, gethostname, getpwuid, malloc, opendir, popen,
+    printf, readdir, sprintf, stat as stat_func, strcat, strchr, strcpy, strlen, strstr, strtoll,
+    time, uname, CSTR,
 };
 
-use libc::{
-    c_char, c_int, c_void, size_t, sscanf, stat as stat_struct,
-    utsname,
-};
+use libc::{c_char, c_int, c_void, size_t, sscanf, stat as stat_struct, utsname};
 
 use crate::fetch_info::FetchInfo;
 
@@ -25,8 +16,8 @@ use core::slice;
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
 mod bsd;
-mod linux_pkgs;
 mod linux;
+mod linux_pkgs;
 mod unix;
 
 use crate::utils;
@@ -53,12 +44,10 @@ impl SystemFormat<'_> {
             if system.os == os
                 && system.name
                     == unsafe {
-                        core::str::from_utf8_unchecked(
-                            slice::from_raw_parts(
-                                os_name as *const u8,
-                                strlen(os_name) + 1,
-                            ),
-                        )
+                        core::str::from_utf8_unchecked(slice::from_raw_parts(
+                            os_name as *const u8,
+                            strlen(os_name) + 1,
+                        ))
                     }
             {
                 return system;
@@ -74,8 +63,11 @@ impl SystemFormat<'_> {
 
             if settings.logo {
                 dy = self.logo.h as i32;
-                
-                let logo_chars = slice::from_raw_parts(c_str(self.logo.logo) as *const u8, strlen(c_str(self.logo.logo)) + 1);
+
+                let logo_chars = slice::from_raw_parts(
+                    c_str(self.logo.logo) as *const u8,
+                    strlen(c_str(self.logo.logo)) + 1,
+                );
 
                 let mut i: usize = 0;
                 let mut checking = false;
@@ -84,8 +76,19 @@ impl SystemFormat<'_> {
                     if logo_chars[i] == b'$' {
                         checking = true;
                     }
-                    if checking && logo_chars[i] > 50 && logo_chars[i] < 60 {
-                        printf(c_str("\x1B[0;%dm\0"), logo_chars[i] as c_int - 20);
+                    if checking
+                        && (logo_chars[i] as c_int == '0' as c_int
+                            || logo_chars[i] as c_int == '1' as c_int
+                            || logo_chars[i] as c_int == '2' as c_int
+                            || logo_chars[i] as c_int == '3' as c_int
+                            || logo_chars[i] as c_int == '4' as c_int
+                            || logo_chars[i] as c_int == '5' as c_int
+                            || logo_chars[i] as c_int == '6' as c_int
+                            || logo_chars[i] as c_int == '7' as c_int
+                            || logo_chars[i] as c_int == '8' as c_int
+                            || logo_chars[i] as c_int == '9' as c_int)
+                    {
+                        printf(c_str("\x1B[0;%dm\0"), logo_chars[i] as c_int - 19);
                     }
                     if !checking {
                         printf(c_str("%c\0"), logo_chars[i] as c_int);
@@ -125,7 +128,7 @@ impl SystemFormat<'_> {
     fn print_all_info(&self, settings: FetchInfo) -> i32 {
         let mut print_space = -4;
 
-        // PRINT_SPACE IS VARIABLE FOR 
+        // PRINT_SPACE IS VARIABLE FOR
         // MAKE PLACE DATA STRINGS AFTER
         // LOGO
         if settings.logo {
@@ -137,10 +140,7 @@ impl SystemFormat<'_> {
         let mut count_of_info = 0;
 
         if settings.user_host {
-            Self::print_info(
-                self.user_host(),
-                print_space,
-            );
+            Self::print_info(self.user_host(), print_space);
             count_of_info += 1;
         }
 
@@ -149,45 +149,27 @@ impl SystemFormat<'_> {
         let max_length = settings.max_length();
 
         if settings.os {
-            Self::print_info(
-                self.os(max_length - 2),
-                print_space,
-            );
+            Self::print_info(self.os(max_length - 2), print_space);
             count_of_info += 1;
         }
         if settings.device {
-            Self::print_info(
-                self.device(max_length - 4),
-                print_space,
-            );
+            Self::print_info(self.device(max_length - 4), print_space);
             count_of_info += 1;
         }
         if settings.kernel {
-            Self::print_info(
-                self.kernel(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.kernel(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.uptime {
-            Self::print_info(
-                self.uptime(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.uptime(max_length - 6), print_space);
             count_of_info += 1;
         }
         if settings.pkgs {
-            Self::print_info(
-                self.pkgs(max_length - 4),
-                print_space,
-            );
+            Self::print_info(self.pkgs(max_length - 4), print_space);
             count_of_info += 1;
         }
         if settings.memory {
-            Self::print_info(
-                self.memory(max_length - 6),
-                print_space,
-            );
+            Self::print_info(self.memory(max_length - 6), print_space);
             count_of_info += 1;
         }
 

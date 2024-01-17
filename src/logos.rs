@@ -37,7 +37,7 @@ pub const UNKNOWN_LINUX_LOGO: Logo<'_> = Logo::new(
 pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-     _____
+     ${c1}_____
    \-     -/
 \_/         \
 |        O O |

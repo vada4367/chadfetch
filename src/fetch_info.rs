@@ -1,7 +1,5 @@
 use libc::size_t;
 
-
-
 #[derive(Clone, Copy)]
 pub struct FetchInfo {
     pub logo: bool,
