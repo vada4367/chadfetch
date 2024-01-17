@@ -24,15 +24,21 @@ pub fn device(
             (LEN_STRING + 100) as i32,
             hw_product,
         );
+    }
+
+    utils::delete_char!(output.as_ptr() as CSTR, '\n' as c_int);
+
+    unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("\x1B[0;33mhost %s%s\0"),
+            c_str("\x1B[0;%dmhost %s\x1B[0;%dm%s\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             c_str(&output),
         );
     }
 
-    utils::delete_char!(result.as_ptr() as CSTR, '\n' as c_int);
 
     c_str(&result)
 }
@@ -69,8 +75,10 @@ pub fn uptime(
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("uptime %s%s\0"),
+            c_str("\x1B[0;%dmuptime %s\x1B[0;%dm%s\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             utils::time(uptime),
         );
     }
@@ -128,8 +136,10 @@ pub fn memory(
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("memory %s%dM / %dM\0"),
+            c_str("\x1B[0;%dmmemory %s\x1B[0;%dm%dM / %dM\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             avm,
             pm,
         );
@@ -162,8 +172,10 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     unsafe {
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("pkgs %s%d\0"),
+            c_str("\x1B[0;%dmpkgs %s\x1B[0;%dm%d\0"),
+            sys_format.palette.vars,
             spaces_str.as_ptr() as CSTR,
+            sys_format.palette.text,
             pkgs,
         );
     }
