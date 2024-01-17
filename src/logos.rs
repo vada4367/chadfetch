@@ -20,18 +20,22 @@ impl Logo<'_> {
 pub const UNKNOWN_LINUX_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-     ___ 
-    (.. |
-    (<> |
-   / __  \
-  ( /  \ /|
- _/\ __)/_)
- \/-____\/
+     ________
+    VT       FGV
+    U ${c1}CHAD${c0}     AV
+   ${c1}FETCH${c0}  RL    U
+   S  A  YKSA  AH
+   TH AA ${c1}sAFE${c0} A U
+   \  _ _   A   J>
+    | __*   A   P  
+    M        AX 
+    [    EAIV    
+     -----         
 "#,
         "\0"
     ),
-    13,
-    7,
+    19,
+    10,
 );
 
 pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
