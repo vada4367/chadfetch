@@ -73,7 +73,7 @@ pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
     ),
     SystemFormat::new(
         OS::BSD,
-        GIGACHAD_LOGO,
+        OPENBSD_LOGO,
         "OpenBSD\0",
         OPENBSD_PALETTE,
         0,
