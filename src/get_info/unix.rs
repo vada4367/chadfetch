@@ -55,7 +55,7 @@ pub fn kernel(
 
         sprintf(
             result.as_ptr() as *mut c_char,
-            c_str("\x1B[0;%dmkernel %s\x1B[0;%dm%s %s\0"),
+            c_str("\x1B[0;%dmkernel %s\x1B[0;%dm%s\0"),
             sys_format.palette.vars,
             spaces_str.as_ptr() as *const c_char,
             sys_format.palette.text,
