@@ -23,5 +23,28 @@ impl Palette {
 // YOU WOULD LIKE, AND IN 
 // ARGUMENTS FOR FUNCTION 
 // WRITE !ANSI! COLORS
+//
+//
+//
+// FIRST ARGUMENT text color:
+//
+// memory "text"
+//           ^
+//           |
+//
+// SECOND ARGUMENT vars color:
+//
+// memory "text"
+//   ^
+//   |
+//
+// LAST ARGUMENT contrast color:
+//
+// name@hostname
+//  
+//   ^      ^
+//   |      |
+//
 
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);
+pub const OPENBSD_PALETTE: Palette = Palette::new(37, 33, 34);

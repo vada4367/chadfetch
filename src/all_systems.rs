@@ -75,7 +75,7 @@ pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
         OS::BSD,
         GIGACHAD_LOGO,
         "OpenBSD\0",
-        VOID_PALETTE,
+        OPENBSD_PALETTE,
         0,
     ),
 ];
