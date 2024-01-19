@@ -59,7 +59,6 @@ pub fn kernel(
             sys_format.palette.vars,
             spaces_str.as_ptr() as *const c_char,
             sys_format.palette.text,
-            c_str(&name.sysname),
             c_str(&name.release),
         );
     }
