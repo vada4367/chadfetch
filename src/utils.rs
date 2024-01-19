@@ -61,8 +61,7 @@ impl SystemFormat<'_> {
 
             // MOVE THE CURSOR TO
             // THE END OF THE OUTPUT
-            printf(c_str("\x1B[%dB\0"), dy - 1);
-            printf(c_str("\n\0"));
+            printf(c_str("\x1B[%dB\0"), dy);
         }
     }
 
