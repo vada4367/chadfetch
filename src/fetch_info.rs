@@ -13,8 +13,8 @@ pub struct FetchInfo {
 }
 
 //
-// FUNCTION max_length FOR 
-// MAKE RIGHT SPACES NAME AND 
+// FUNCTION max_length FOR
+// MAKE RIGHT SPACES NAME AND
 // DATA. Example:
 //
 // os <-----> Linux

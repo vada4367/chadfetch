@@ -1,11 +1,10 @@
-use crate::{FetchInfo, SystemFormat};
-use libc::c_int;
 use crate::libc::*;
+use crate::{FetchInfo, SystemFormat};
 use ::libc::{c_char, size_t};
 use core::slice;
+use libc::c_int;
 
 pub const LEN_STRING: usize = 1;
-
 
 impl SystemFormat<'_> {
     pub fn print_fetch(&self, settings: FetchInfo) {
@@ -34,7 +33,9 @@ impl SystemFormat<'_> {
                     {
                         printf(
                             c_str("\x1B[0;%dm\0"),
-                            self.palette.get_color(logo_chars[i] as c_int - 48),
+                            self.palette.get_color(
+                                logo_chars[i] as c_int - 48,
+                            ),
                         );
                     }
                     if !checking {
@@ -138,7 +139,6 @@ impl SystemFormat<'_> {
         count_of_info
     }
 }
-
 
 pub fn spaces(info_space: size_t) -> [c_char; 20] {
     let mut spaces = [0x20 as c_char; 20];

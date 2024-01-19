@@ -20,8 +20,7 @@ pub fn device(
             c_str("/sys/devices/virtual/dmi/id/product_version\0"),
             c_str("r\0"),
         );
-        if !name.is_null() && !version.is_null()
-        {
+        if !name.is_null() && !version.is_null() {
             fscanf(name, c_str("%s\n\0"), c_str(&name_str));
             fscanf(version, c_str("%s\n\0"), c_str(&version_str));
         }
@@ -129,39 +128,36 @@ pub fn memory(
             let fgets_line =
                 fgets(line.as_mut_ptr(), line.len() as c_int, file);
 
-            if !strstr(c_str(&line), c_str("MemTotal\0")).is_null()
-            {
+            if !strstr(c_str(&line), c_str("MemTotal\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("MemTotal: %d\0"),
                     &mut mem_total,
                 );
             }
-            if !strstr(c_str(&line), c_str("MemFree\0")).is_null()
-            {
+            if !strstr(c_str(&line), c_str("MemFree\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("MemFree: %d\0"),
                     &mut mem_free,
                 );
             }
-            if !strstr(c_str(&line), c_str("Buffers\0")).is_null()
-            {
+            if !strstr(c_str(&line), c_str("Buffers\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("Buffers: %d\0"),
                     &mut buffers,
                 );
             }
-            if !strstr(c_str(&line), c_str("Cached\0")).is_null()
-            {
+            if !strstr(c_str(&line), c_str("Cached\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("Cached: %d\0"),
                     &mut cached,
                 );
             }
-            if !strstr(c_str(&line), c_str("SReclaimable\0")).is_null()
+            if !strstr(c_str(&line), c_str("SReclaimable\0"))
+                .is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -169,8 +165,7 @@ pub fn memory(
                     &mut s_reclaimable,
                 );
             }
-            if !strstr(c_str(&line), c_str("Shmem\0")).is_null()
-            {
+            if !strstr(c_str(&line), c_str("Shmem\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("Shmem: %d\0"),
@@ -244,8 +239,7 @@ pub fn get_os_name() -> &'static str {
             os_release,
         );
 
-        if !strstr(c_str(&os_name), c_str("NAME\0")).is_null()
-        {
+        if !strstr(c_str(&os_name), c_str("NAME\0")).is_null() {
             sscanf(
                 os_name.as_ptr() as CSTR,
                 c_str("NAME=\"%s\"\0"),

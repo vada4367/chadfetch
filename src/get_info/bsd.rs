@@ -39,7 +39,6 @@ pub fn device(
         );
     }
 
-
     c_str(&result)
 }
 

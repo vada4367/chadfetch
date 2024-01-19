@@ -67,7 +67,7 @@ impl SystemFormat<'_> {
 
         return ALL_SYSTEMS[0];
     }
-    
+
     pub fn user_host(&self) -> CSTR {
         return unix::user_host(self);
     }

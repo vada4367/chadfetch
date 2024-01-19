@@ -1,11 +1,16 @@
 #![no_std]
 #![no_main]
 
+mod args;
+use crate::args::*;
+
 mod libc;
-use libc::CSTR;
 
 mod logos;
 mod palette;
+
+use crate::logos::*;
+use crate::palette::*;
 
 mod all_systems;
 use crate::all_systems::SystemFormat;
@@ -17,11 +22,13 @@ use fetch_info::FetchInfo;
 
 mod utils;
 
-
+use core::slice;
 
 #[no_mangle]
-fn main(_argc: *const CSTR, _argv: isize) -> isize {
-    let system = SystemFormat::get_system();
+fn main(_argc: isize, _argv: *const *const u8) -> isize {
+    args::read_args(_argc, _argv);
+
+    let mut system = SystemFormat::get_system();
 
     let settings = FetchInfo {
         logo: true,
@@ -34,7 +41,14 @@ fn main(_argc: *const CSTR, _argv: isize) -> isize {
         memory: true,
     };
 
-    system.print_fetch(settings);
+    system.logo = GIGACHAD_LOGO;
+    system.palette = GIGACHAD_PALETTE;
+
+    //system.print_fetch(settings);
 
     return 0isize;
+}
+
+fn help() {
+    todo!();
 }

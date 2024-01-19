@@ -1,4 +1,4 @@
-use libc::{size_t, c_int};
+use libc::{c_int, size_t};
 
 #[derive(Clone, Copy)]
 pub struct Palette {
@@ -18,19 +18,18 @@ impl Palette {
 
     pub fn get_color(self, color: c_int) -> c_int {
         match color {
-            1 => { return self.text as c_int },
-            2 => { return self.vars as c_int },
-            3 => { return self.contrast as c_int },
-            _ => { return 37 },
+            1 => return self.text as c_int,
+            2 => return self.vars as c_int,
+            3 => return self.contrast as c_int,
+            _ => return 37,
         }
     }
 }
 
-
-// FOR CREATE YOUR PALETTE 
-// MAKE CONST WITH NAME WHICH 
-// YOU WOULD LIKE, AND IN 
-// ARGUMENTS FOR FUNCTION 
+// FOR CREATE YOUR PALETTE
+// MAKE CONST WITH NAME WHICH
+// YOU WOULD LIKE, AND IN
+// ARGUMENTS FOR FUNCTION
 // WRITE !ANSI! COLORS
 //
 //
@@ -50,10 +49,11 @@ impl Palette {
 // LAST ARGUMENT contrast color:
 //
 // name@hostname
-//  
+//
 //   ^      ^
 //   |      |
 //
 
+pub const GIGACHAD_PALETTE: Palette = Palette::new(38, 31, 33);
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);
 pub const OPENBSD_PALETTE: Palette = Palette::new(37, 93, 94);
