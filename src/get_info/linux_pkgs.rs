@@ -4,7 +4,7 @@ pub fn xbps() -> size_t {
     let mut dir;
     let d = unsafe { opendir(c_str("/var/db/xbps/\0")) };
 
-    if d == core::ptr::null_mut() {
+    if d.is_null() {
         return 0;
     }
 
@@ -24,7 +24,7 @@ pub fn xbps() -> size_t {
             }
         }
     }
-    if c_str(&fname) == core::ptr::null_mut() {
+    if c_str(&fname).is_null() {
         return 0;
     }
 
@@ -34,7 +34,7 @@ pub fn xbps() -> size_t {
     unsafe {
         let f = fopen(c_str(&fname), c_str("r\0"));
 
-        if f == core::ptr::null_mut() {
+        if f.is_null() {
             return 0;
         }
 
@@ -51,7 +51,7 @@ pub fn xbps() -> size_t {
         loop {
             raw_file = strstr(raw_file as CSTR, installed_string)
                 as *mut c_void;
-            if raw_file == core::ptr::null_mut() {
+            if raw_file.is_null() {
                 break;
             }
             count += 1;

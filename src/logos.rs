@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use libc::size_t;
 
 #[derive(Clone, Copy)]
@@ -17,21 +18,31 @@ impl Logo<'_> {
     }
 }
 
-pub const UNKNOWN_LINUX_LOGO: Logo<'_> = Logo::new(
+
+// FOR CREATE YOUR LOGO, 
+// YOU WRITE LOGO TEXT 
+// AND WIDTH & HEIGHT
+// IN CONST WITH NAME 
+// WHICH YOU WOULD LIKE
+
+pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-     ___ 
-    (.. |
-    (<> |
-   / __  \
-  ( /  \ /|
- _/\ __)/_)
- \/-____\/
+     ________
+    VT       FGV
+    U ${c2}CHAD${c9}     AV
+   ${c2}FETCH${c9}  RL    U
+   |  #    YKSA
+   T-IIA ${c2}sAFE${c9} A U
+   \  ___ T /--/
+    L*-=^ ^#/| \
+    AMPERSAND .W\
+     %#####% .;i&} 
 "#,
         "\0"
     ),
-    13,
-    7,
+    17,
+    10,
 );
 
 pub const OPENBSD_LOGO: Logo<'_> = Logo::new(

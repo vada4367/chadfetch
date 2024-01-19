@@ -20,8 +20,7 @@ pub fn device(
             c_str("/sys/devices/virtual/dmi/id/product_version\0"),
             c_str("r\0"),
         );
-        if !(name == core::ptr::null_mut()
-            || version == core::ptr::null_mut())
+        if !name.is_null() && !version.is_null()
         {
             fscanf(name, c_str("%s\n\0"), c_str(&name_str));
             fscanf(version, c_str("%s\n\0"), c_str(&version_str));
@@ -56,7 +55,7 @@ pub fn uptime(
     let mut line = [0; LEN_STRING + 30];
     let (mut uptime, mut _uptime) = (0, 0);
 
-    if file != core::ptr::null_mut() {
+    if !file.is_null() {
         unsafe {
             fgets(line.as_mut_ptr(), line.len() as c_int, file);
             sscanf(
@@ -93,7 +92,7 @@ pub fn memory(
     let file =
         unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
-    if file == core::ptr::null_mut() {
+    if file.is_null() {
         unsafe {
             sprintf(
                 result.as_ptr() as *mut c_char,
@@ -130,8 +129,7 @@ pub fn memory(
             let fgets_line =
                 fgets(line.as_mut_ptr(), line.len() as c_int, file);
 
-            if strstr(c_str(&line), c_str("MemTotal\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("MemTotal\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -139,8 +137,7 @@ pub fn memory(
                     &mut mem_total,
                 );
             }
-            if strstr(c_str(&line), c_str("MemFree\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("MemFree\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -148,8 +145,7 @@ pub fn memory(
                     &mut mem_free,
                 );
             }
-            if strstr(c_str(&line), c_str("Buffers\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("Buffers\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -157,8 +153,7 @@ pub fn memory(
                     &mut buffers,
                 );
             }
-            if strstr(c_str(&line), c_str("Cached\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("Cached\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -166,8 +161,7 @@ pub fn memory(
                     &mut cached,
                 );
             }
-            if strstr(c_str(&line), c_str("SReclaimable\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("SReclaimable\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -175,8 +169,7 @@ pub fn memory(
                     &mut s_reclaimable,
                 );
             }
-            if strstr(c_str(&line), c_str("Shmem\0"))
-                != core::ptr::null_mut()
+            if !strstr(c_str(&line), c_str("Shmem\0")).is_null()
             {
                 sscanf(
                     line.as_ptr() as CSTR,
@@ -237,7 +230,7 @@ pub fn get_os_name() -> &'static str {
     let os_release =
         unsafe { fopen(c_str("/etc/os-release\0"), c_str("r\0")) };
 
-    if os_release == core::ptr::null_mut() {
+    if os_release.is_null() {
         return "unknown\0";
     }
 
@@ -251,8 +244,7 @@ pub fn get_os_name() -> &'static str {
             os_release,
         );
 
-        if strstr(c_str(&os_name), c_str("NAME\0"))
-            != core::ptr::null_mut()
+        if !strstr(c_str(&os_name), c_str("NAME\0")).is_null()
         {
             sscanf(
                 os_name.as_ptr() as CSTR,

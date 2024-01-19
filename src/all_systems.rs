@@ -3,6 +3,10 @@
 use crate::logos::*;
 use crate::palette::*;
 
+
+// THIS ENUM FOR CHOISE,
+// WHERE WE CAN GET DATA 
+// ABOUT SYSTEM
 #[derive(Clone, Copy, PartialEq)]
 pub enum OS {
     Linux,
@@ -10,6 +14,8 @@ pub enum OS {
     Unknown,
 }
 
+
+// MAIN STRUCT
 #[derive(Clone, Copy)]
 pub struct SystemFormat<'a> {
     pub os: OS,
@@ -37,10 +43,23 @@ impl SystemFormat<'_> {
     }
 }
 
+
+// README!!!
+//
+// IF YOU WILL ADD YOUR SYSTEM:
+// 
+// In 1st argument write enum OS 
+// In 2nd LOGO (FROM src/logos.rs)
+// In 3 first string of /etc/os-release 
+// In 4 Palette (FROM src/palette.rs)
+// In 5 JUST NUMBER IN ARRAY
+//
+// GOOD LUCK!
+
 pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
     SystemFormat::new(
         OS::Linux,
-        UNKNOWN_LINUX_LOGO,
+        GIGACHAD_LOGO,
         "Unknown\0",
         VOID_PALETTE,
         0,
@@ -54,7 +73,7 @@ pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
     ),
     SystemFormat::new(
         OS::BSD,
-        OPENBSD_LOGO,
+        GIGACHAD_LOGO,
         "OpenBSD\0",
         VOID_PALETTE,
         0,
