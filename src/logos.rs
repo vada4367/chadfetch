@@ -51,7 +51,7 @@ pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
      ${c2}_____
    \-     -/
 \_/         \
-|        O O |
+|        ${c3}O O${c2} |
 |_  <   )  3 )
 / \         /
    /-_____-\
