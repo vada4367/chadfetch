@@ -56,4 +56,4 @@ impl Palette {
 //
 
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);
-pub const OPENBSD_PALETTE: Palette = Palette::new(37, 33, 93);
+pub const OPENBSD_PALETTE: Palette = Palette::new(37, 93, 94);
