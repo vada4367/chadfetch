@@ -1,10 +1,12 @@
-use crate::FetchInfo;
 use crate::libc::*;
-use libc::c_int;
+use crate::FetchInfo;
 use core::slice;
+use libc::c_int;
 
-
-pub fn read_args(argc: isize, argv: *const *const u8) -> Result<FetchInfo, c_int> {
+pub fn read_args(
+    argc: isize,
+    argv: *const *const u8,
+) -> Result<FetchInfo, c_int> {
     let mut settings = FetchInfo {
         logo: true,
         user_host: true,
@@ -16,13 +18,11 @@ pub fn read_args(argc: isize, argv: *const *const u8) -> Result<FetchInfo, c_int
         memory: true,
     };
 
-
     let args_array =
         unsafe { slice::from_raw_parts(argv, argc as usize) };
 
     let arg;
     let arg_str;
-
 
     for i in 1..args_array.len() {
         arg = args_array[i];
@@ -33,7 +33,6 @@ pub fn read_args(argc: isize, argv: *const *const u8) -> Result<FetchInfo, c_int
                 strlen(arg as CSTR) + 1,
             ))
         };
-
 
         match arg_str {
             "-h\0" | "--help\0" => {

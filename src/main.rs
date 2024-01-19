@@ -21,17 +21,16 @@ use fetch_info::FetchInfo;
 
 mod utils;
 
-
-
 #[no_mangle]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
     let settings = match args::read_args(_argc, _argv) {
         Ok(data) => data,
-        Err(error_code) => { return error_code as isize; },
+        Err(error_code) => {
+            return error_code as isize;
+        }
     };
 
     let mut system = SystemFormat::get_system();
-
 
     system.logo = GIGACHAD_LOGO;
     system.palette = GIGACHAD_PALETTE;
@@ -40,4 +39,3 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
 
     return 0isize;
 }
-
