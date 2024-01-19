@@ -53,6 +53,23 @@ impl Palette {
 //   ^      ^
 //   |      |
 //
+//
+// AFTER CREATE YOUR PALETTE
+// ADD THIS TO ALL_PALETTE WITH
+// NAME
+
+pub const ALL_PALETTE: &[(&str, Palette)] = &[
+    ("gigachad\0", GIGACHAD_PALETTE),
+    ("openbsd\0", OPENBSD_PALETTE),
+    ("void\0", VOID_PALETTE),
+];
+
+pub fn search_palette(key: &str) -> Palette {
+    ALL_PALETTE
+        .binary_search_by(|(k, _)| k.cmp(&key))
+        .map(|x| ALL_PALETTE[x].1)
+        .expect("NO PALETTE")
+}
 
 pub const GIGACHAD_PALETTE: Palette = Palette::new(38, 31, 33);
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);

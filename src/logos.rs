@@ -23,6 +23,22 @@ impl Logo<'_> {
 // AND WIDTH & HEIGHT
 // IN CONST WITH NAME
 // WHICH YOU WOULD LIKE
+//
+// AND ADD THIS TO ALL_LOGO
+// WITH NAME
+
+pub const ALL_LOGO: &[(&str, Logo<'_>)] = &[
+    ("gigachad\0", GIGACHAD_LOGO),
+    ("openbsd\0", OPENBSD_LOGO),
+    ("void\0", VOID_LOGO),
+];
+
+pub fn search_logo(key: &str) -> Logo<'_> {
+    ALL_LOGO
+        .binary_search_by(|(k, _)| k.cmp(&key))
+        .map(|x| ALL_LOGO[x].1)
+        .expect("NO LOGO")
+}
 
 pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
     concat!(
