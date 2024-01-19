@@ -1,4 +1,4 @@
-use libc::size_t;
+use libc::{size_t, c_int};
 
 #[derive(Clone, Copy)]
 pub struct Palette {
@@ -13,6 +13,15 @@ impl Palette {
             text: c1,
             vars: c2,
             contrast: c3,
+        }
+    }
+
+    pub fn get_color(self, color: c_int) -> c_int {
+        match color {
+            1 => { return self.text as c_int },
+            2 => { return self.vars as c_int },
+            3 => { return self.contrast as c_int },
+            _ => { return 37 },
         }
     }
 }

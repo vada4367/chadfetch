@@ -30,10 +30,10 @@ pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
         r#"
      ________
     VT       FGV
-    U ${c2}CHAD${c9}     AV
-   ${c2}FETCH${c9}  RL    U
+    U ${c2}CHAD${c3}     AV
+   ${c2}FETCH${c3}  RL    U
    |  #    YKSA
-   T-IIA ${c2}sAFE${c9} A U
+   T-IIA ${c2}sAFE${c3} A U
    \  ___ T /--/
     L*-=^ ^#/| \
     AMPERSAND .W\
@@ -48,7 +48,7 @@ pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
 pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-     ${c1}_____
+     ${c2}_____
    \-     -/
 \_/         \
 |        O O |
@@ -65,7 +65,7 @@ pub const OPENBSD_LOGO: Logo<'_> = Logo::new(
 pub const VOID_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
-    ${c3}_______
+    ${c2}_______
  _ \______ -
 | \  ___  \ |
 | | /   \ | |

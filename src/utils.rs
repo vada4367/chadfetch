@@ -29,12 +29,12 @@ impl SystemFormat<'_> {
                         checking = true;
                     }
                     if checking
-                        && (logo_chars[i] as c_int > 49)
-                        && (logo_chars[i] as c_int) < 58
+                        && (logo_chars[i] as c_int > 48)
+                        && (logo_chars[i] as c_int) < 52
                     {
                         printf(
                             c_str("\x1B[0;%dm\0"),
-                            logo_chars[i] as c_int - 19,
+                            self.palette.get_color(logo_chars[i] as c_int - 48),
                         );
                     }
                     if !checking {
