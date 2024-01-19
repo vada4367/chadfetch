@@ -103,14 +103,18 @@ fn help() {
     unsafe {
         printf(c_str("By WagnerW man\n\0"));
         printf(c_str("Released under the MIT.\n\n\0"));
-        printf(c_str("-h   --help       Print this help screen\n\0"));
+        printf(c_str(
+            "-h   --help       Print this help screen\n\0",
+        ));
         printf(c_str("-v   --version    Print version info\n\0"));
         printf(c_str("-ol  --off-logo   Off print logo\n\0"));
         printf(c_str("-l   --logo       Change logo\n\0"));
         printf(c_str("-p   --palette    Change palette\n\0"));
         printf(c_str("-on  --off-name   Off user_host print\n\0"));
         printf(c_str("-oos --off-os     Off os print\n\0"));
-        printf(c_str("-oh  --off-host   Off host (device) print\n\0"));
+        printf(c_str(
+            "-oh  --off-host   Off host (device) print\n\0",
+        ));
         printf(c_str("-ok  --off-kernel Off kernel print\n\0"));
         printf(c_str("-ou  --off-uptime Off uptime print\n\0"));
         printf(c_str("-op  --off-pkgs   Off pkgs print\n\0"));
