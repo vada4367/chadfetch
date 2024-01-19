@@ -184,7 +184,7 @@ macro_rules! delete_char {
         let mut p = $string;
         loop {
             p = unsafe { strchr(p, $char) };
-            if p == core::ptr::null() {
+            if p.is_null() {
                 break;
             }
             unsafe { strcpy(p as *mut c_char, p.add(1)) };

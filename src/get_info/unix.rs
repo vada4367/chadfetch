@@ -86,7 +86,7 @@ pub fn get_os() -> OS {
         "Linux\0" => {
             return OS::Linux;
         }
-        "OpenBSD\0" => {
+        "OpenBSD\0" | "FreeBSD\0" | "NetBSD\0" => {
             return OS::BSD;
         }
         _ => {
