@@ -64,11 +64,10 @@ pub const ALL_PALETTE: &[(&str, Palette)] = &[
     ("void\0", VOID_PALETTE),
 ];
 
-pub fn search_palette(key: &str) -> Palette {
+pub fn search_palette(key: &str) -> Result<Palette, usize> {
     ALL_PALETTE
         .binary_search_by(|(k, _)| k.cmp(&key))
         .map(|x| ALL_PALETTE[x].1)
-        .expect("NO PALETTE")
 }
 
 pub const GIGACHAD_PALETTE: Palette = Palette::new(38, 31, 33);
