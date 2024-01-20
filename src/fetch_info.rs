@@ -21,6 +21,19 @@ pub struct FetchInfo {
 // uptime <-> 3h 20m
 //
 impl FetchInfo {
+    pub fn get_full_info() -> Self {
+        Self {
+            logo: true,
+            user_host: true,
+            os: true,
+            device: true,
+            kernel: true,
+            uptime: true,
+            pkgs: true,
+            memory: true,
+        }
+    }
+
     pub fn max_length(self) -> size_t {
         if self.kernel || self.uptime || self.memory {
             return 6;

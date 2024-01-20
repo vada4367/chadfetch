@@ -4,7 +4,7 @@ use crate::palette;
 use crate::FetchInfo;
 use crate::SystemFormat;
 use core::slice;
-use libc::c_int;
+use libc::{c_int, c_char};
 
 
 pub fn read_args(
@@ -168,7 +168,10 @@ fn help(
     _arg: &'static str,
 ) -> Result<(), c_int> {
     unsafe {
-        printf(c_str("By WagnerW man\n\0"));
+        printf(c_str("LOOK AT YOUR SYSTEM WITH OTHER HAND!\n\0"));
+        printf(c_str("Really gigachad fetch.\n\0"));
+        let _ = version(_sf, _fi, _arg);
+        printf(c_str("\nBy WagnerW man\n\0"));
         printf(c_str("Released under the MIT.\n\n\0"));
         
         for arg in ALL_ARGS {
@@ -189,8 +192,17 @@ fn version(
     _fi: &mut FetchInfo,
     _arg: &'static str,
 ) -> Result<(), c_int> {
+    let version = [0; 100];
     unsafe {
-        printf(c_str("chadfetch 0.2.2\n\0"));
+        sprintf(
+            version.as_ptr() as *mut c_char,
+            c_str("%s\0"),
+            c_str(env!("CARGO_PKG_VERSION")),
+        );
+    }
+
+    unsafe {
+        printf(c_str("chadfetch %s\n\0"), c_str(&version));
     }
 
     return Err(0);

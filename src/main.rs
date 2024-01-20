@@ -20,16 +20,7 @@ mod utils;
 
 #[no_mangle]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
-    let mut settings = FetchInfo {
-        logo: true,
-        user_host: true,
-        os: true,
-        device: true,
-        kernel: true,
-        uptime: true,
-        pkgs: true,
-        memory: true,
-    };
+    let mut settings = FetchInfo::get_full_info();
     let mut system = SystemFormat::get_system();
 
     match args::read_args(_argc, _argv, &mut system, &mut settings) {
