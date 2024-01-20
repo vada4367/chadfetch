@@ -6,6 +6,25 @@ use crate::SystemFormat;
 use core::slice;
 use libc::c_int;
 
+pub const ALL_ARGS: &[(
+    &str,
+    &str,
+    fn(&mut SystemFormat, &mut FetchInfo) -> Result<(), c_int>,
+)] = &[
+    ("-h\0", "--help\0", help),
+    ("-v\0", "--version\0", version)
+];
+
+pub fn search_argument(
+    key: &str,
+) -> fn(&mut SystemFormat, &mut FetchInfo) -> Result<(), c_int> {
+    ALL_ARGS[
+        ALL_ARGS
+            .iter()
+            .position(|(i, j, _)| i == &key || j == &key)
+            .expect("NO LOGO")
+    ].2
+}
 pub fn read_args(
     argc: isize,
     argv: *const *const u8,
@@ -21,62 +40,12 @@ pub fn read_args(
     while i < args_array.len() {
         arg_str = get_str(args_array, i);
 
-        match arg_str {
-            "-h\0" | "--help\0" => {
-                version();
-                help();
-                return Err(0);
-            }
-            "-v\0" | "--version\0" => {
-                version();
-                return Err(0);
-            }
-            "-ol\0" | "--off-logo\0" => {
-                settings.logo = false;
-            }
-            "-l\0" | "--logo\0" => {
-                i += 1;
+        let arg_func = search_argument(arg_str);
 
-                arg_str = get_str(args_array, i);
-
-                system.logo = logos::search_logo(arg_str);
-            }
-            "-p\0" | "--palette\0" => {
-                i += 1;
-
-                arg_str = get_str(args_array, i);
-
-                system.palette = palette::search_palette(arg_str);
-            }
-            "-on\0" | "--off-name\0" => {
-                settings.user_host = false;
-            }
-            "-oos\0" | "--off-os\0" => {
-                settings.os = false;
-            }
-            "-oh\0" | "--off-host\0" => {
-                settings.device = false;
-            }
-            "-ok\0" | "--off-kernel\0" => {
-                settings.kernel = false;
-            }
-            "-ou\0" | "--off-uptime\0" => {
-                settings.uptime = false;
-            }
-            "-op\0" | "--off-pkgs\0" => {
-                settings.pkgs = false;
-            }
-            "-om\0" | "--off-memory\0" => {
-                settings.memory = false;
-            }
-            _ => {
-                unsafe {
-                    printf(
-                        c_str("Unexpected argument: %s\n\0"),
-                        arg_str.as_ptr() as CSTR,
-                    );
-                }
-                return Err(-1);
+        match arg_func(system, settings) {
+            Ok(_) => {}
+            Err(err) => {
+                return Err(err);
             }
         }
 
@@ -99,7 +68,10 @@ fn get_str(array: &[*const u8], i: usize) -> &str {
     return arg_str;
 }
 
-fn help() {
+fn help(
+    _sf: &mut SystemFormat,
+    _fi: &mut FetchInfo,
+) -> Result<(), c_int> {
     unsafe {
         printf(c_str("By WagnerW man\n\0"));
         printf(c_str("Released under the MIT.\n\n\0"));
@@ -120,10 +92,17 @@ fn help() {
         printf(c_str("-op  --off-pkgs   Off pkgs print\n\0"));
         printf(c_str("-om  --off-memory Off memory print\n\0"));
     }
+
+    return Err(0);
 }
 
-fn version() {
+fn version(
+    _sf: &mut SystemFormat,
+    _fi: &mut FetchInfo,
+) -> Result<(), c_int> {
     unsafe {
         printf(c_str("chadfetch 0.2.2\n\0"));
     }
+
+    return Err(0);
 }
