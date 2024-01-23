@@ -118,6 +118,7 @@ pub fn memory(
             / 1024
             / 1024;
 
+        // SKIP LINES (just start vmstat to understand)
         for _ in 0..3 {
             fgets(
                 vmstat_output.as_ptr() as *mut c_char,

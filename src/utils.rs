@@ -178,7 +178,6 @@ pub fn time(secs: size_t) -> CSTR {
     result.as_ptr() as CSTR
 }
 
-
 pub fn full_path(dir_name: CSTR, part_name: CSTR) -> CSTR {
     let mut dir;
     let d = unsafe { opendir(dir_name) };

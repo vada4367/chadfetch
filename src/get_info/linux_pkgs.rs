@@ -1,8 +1,9 @@
 use crate::get_info::*;
 
 pub fn xbps() -> size_t {
-    let path = utils::full_path(c_str("/var/db/xbps/\0"), c_str("pkgdb\0"));
-    
+    let path =
+        utils::full_path(c_str("/var/db/xbps/\0"), c_str("pkgdb\0"));
+
     if path.is_null() {
         return 0;
     }
@@ -40,7 +41,6 @@ pub fn xbps() -> size_t {
 
     count
 }
-
 
 pub fn pacman() -> size_t {
     let pacman_dir = c_str("/var/lib/pacman/local\0");

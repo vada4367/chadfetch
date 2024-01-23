@@ -198,10 +198,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 
     let mut distro_pkgs = 0;
 
-    let system_pkgs = &[
-        linux_pkgs::xbps(),
-        linux_pkgs::pacman(),
-    ];
+    let system_pkgs = &[linux_pkgs::xbps(), linux_pkgs::pacman()];
 
     for pkgs in system_pkgs {
         if pkgs.clone() != 0 {

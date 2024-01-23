@@ -4,8 +4,9 @@ use crate::palette;
 use crate::FetchInfo;
 use crate::SystemFormat;
 use core::slice;
-use libc::{c_int, c_char};
+use libc::{c_char, c_int};
 
+type ArgFunc = fn(&mut SystemFormat, &mut FetchInfo, &'static str) -> Result<(), c_int>;
 
 pub fn read_args(
     argc: isize,
@@ -74,15 +75,10 @@ pub fn read_args(
     return Ok(());
 }
 
-
 struct Argument {
     short_str: &'static str,
     long_str: &'static str,
-    fn_argument: fn(
-        &mut SystemFormat,
-        &mut FetchInfo,
-        &'static str,
-    ) -> Result<(), c_int>,
+    fn_argument: ArgFunc,
     description: &'static str,
 }
 
@@ -91,11 +87,7 @@ impl Argument {
         s_s: &'static str,
         l_s: &'static str,
         desc: &'static str,
-        fn_arg: fn(
-            &mut SystemFormat,
-            &mut FetchInfo,
-            &'static str,
-        ) -> Result<(), c_int>,
+        fn_arg: ArgFunc,
     ) -> Self {
         Self {
             short_str: s_s,
@@ -135,7 +127,6 @@ fn get_str(array: &[*const u8], i: usize) -> Result<&str, ()> {
     return Ok(arg_str);
 }
 
-
 const HELP_ARG: Argument = Argument::new(
     "-h\0",
     "--help\0",
@@ -157,9 +148,8 @@ const PALETTE_ARG: Argument = Argument::new(
     change_palette,
 );
 
-const ALL_ARGS: &[Argument] = &[HELP_ARG, VERSION_ARG, LOGO_ARG, PALETTE_ARG];
-
-
+const ALL_ARGS: &[Argument] =
+    &[HELP_ARG, VERSION_ARG, LOGO_ARG, PALETTE_ARG];
 
 #[rustfmt::skip]
 fn help(

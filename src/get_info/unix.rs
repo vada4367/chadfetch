@@ -94,7 +94,6 @@ pub fn get_os() -> OS {
     }
 }
 
-
 pub fn search_pkgs(dname: CSTR) -> size_t {
     let mut dir;
     let d = unsafe { opendir(dname) };
