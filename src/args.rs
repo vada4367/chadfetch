@@ -6,7 +6,11 @@ use crate::SystemFormat;
 use core::slice;
 use libc::{c_char, c_int};
 
-type ArgFunc = fn(&mut SystemFormat, &mut FetchInfo, &'static str) -> Result<(), c_int>;
+type ArgFunc = fn(
+    &mut SystemFormat,
+    &mut FetchInfo,
+    &'static str,
+) -> Result<(), c_int>;
 
 pub fn read_args(
     argc: isize,
@@ -88,7 +92,14 @@ struct Argument<
     description: &'static str,
 }
 
-impl<F: Fn(&mut SystemFormat, &mut FetchInfo, &'static str) -> Result<(), c_int>> Argument<F> {
+impl<
+        F: Fn(
+            &mut SystemFormat,
+            &mut FetchInfo,
+            &'static str,
+        ) -> Result<(), c_int>,
+    > Argument<F>
+{
     const fn new(
         s_s: &'static str,
         l_s: &'static str,
