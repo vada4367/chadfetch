@@ -26,6 +26,20 @@ impl Palette {
     }
 }
 
+
+pub fn search_palette(key: &str) -> Result<Palette, usize> {
+    let palette = ALL_PALETTE.iter().position(|&r| r.0 == key);
+
+    if !palette.is_some() {
+        return Err(69);
+    }
+    
+    Ok(
+        ALL_PALETTE[palette.unwrap()].1
+    )
+}
+
+
 // FOR CREATE YOUR PALETTE
 // MAKE CONST WITH NAME WHICH
 // YOU WOULD LIKE, AND IN
@@ -64,11 +78,7 @@ pub const ALL_PALETTE: &[(&str, Palette)] = &[
     ("void\0", VOID_PALETTE),
 ];
 
-pub fn search_palette(key: &str) -> Result<Palette, usize> {
-    ALL_PALETTE
-        .binary_search_by(|(k, _)| k.cmp(&key))
-        .map(|x| ALL_PALETTE[x].1)
-}
+
 
 pub const GIGACHAD_PALETTE: Palette = Palette::new(38, 31, 33);
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);

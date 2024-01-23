@@ -34,9 +34,15 @@ pub const ALL_LOGO: &[(&'static str, Logo<'_>)] = &[
 ];
 
 pub fn search_logo(key: &str) -> Result<Logo<'_>, usize> {
-    ALL_LOGO
-        .binary_search_by(|(k, _)| k.cmp(&key))
-        .map(|x| ALL_LOGO[x].1)
+    let logo = ALL_LOGO.iter().position(|&r| r.0 == key);
+
+    if !logo.is_some() {
+        return Err(69);
+    }
+    
+    Ok(
+        ALL_LOGO[logo.unwrap()].1
+    )
 }
 
 pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(

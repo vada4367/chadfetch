@@ -226,7 +226,7 @@ fn change_logo(
         }
         Err(_) => {
             unsafe {
-                printf(c_str("Unexpected Logo: %s"), c_str(arg));
+                printf(c_str("Unexpected Logo: %s\n\0"), c_str(arg));
             }
 
             return Err(69);
@@ -247,7 +247,7 @@ fn change_palette(
         }
         Err(_) => {
             unsafe {
-                printf(c_str("Unexpected Palette: %s"), c_str(arg));
+                printf(c_str("Unexpected Palette: %s\n\0"), c_str(arg));
             }
 
             return Err(69);
