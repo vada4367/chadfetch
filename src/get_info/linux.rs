@@ -198,10 +198,16 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 
     let mut distro_pkgs = 0;
 
-    let xbps_pkgs = linux_pkgs::xbps();
+    let system_pkgs = &[
+        linux_pkgs::xbps(),
+        linux_pkgs::pacman(),
+    ];
 
-    if xbps_pkgs != 0 {
-        distro_pkgs = xbps_pkgs;
+    for pkgs in system_pkgs {
+        if pkgs.clone() != 0 {
+            distro_pkgs = pkgs.clone();
+            break;
+        }
     }
 
     let result: [c_char; LEN_STRING] = [0; LEN_STRING];

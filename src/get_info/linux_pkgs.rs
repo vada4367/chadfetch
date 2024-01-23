@@ -61,3 +61,11 @@ pub fn xbps() -> size_t {
 
     count
 }
+
+
+pub fn pacman() -> size_t {
+    let pacman_dir = c_str("/var/lib/pacman/local\0");
+    let pkgs = unix::search_pkgs(pacman_dir);
+
+    pkgs
+}

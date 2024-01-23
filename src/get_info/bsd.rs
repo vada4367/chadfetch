@@ -151,22 +151,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let mut dir;
-    let d = unsafe { opendir(c_str("/var/db/pkg/\0")) };
-
-    let mut pkgs = 0;
-    if d != core::ptr::null_mut() {
-        loop {
-            unsafe {
-                dir = readdir(d);
-                if dir == core::ptr::null_mut() {
-                    break;
-                }
-
-                pkgs += 1;
-            }
-        }
-    }
+    let pkgs = unix::search_pkgs(c_str("/var/db/pkgs\0"));
 
     unsafe {
         sprintf(

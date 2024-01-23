@@ -93,3 +93,25 @@ pub fn get_os() -> OS {
         }
     }
 }
+
+
+pub fn search_pkgs(dname: CSTR) -> size_t {
+    let mut dir;
+    let d = unsafe { opendir(dname) };
+
+    let mut pkgs = 0;
+    if d != core::ptr::null_mut() {
+        loop {
+            unsafe {
+                dir = readdir(d);
+                if dir == core::ptr::null_mut() {
+                    break;
+                }
+
+                pkgs += 1;
+            }
+        }
+    }
+
+    pkgs
+}
