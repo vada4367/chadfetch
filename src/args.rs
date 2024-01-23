@@ -88,13 +88,13 @@ struct Argument<
     description: &'static str,
 }
 
-impl Argument<ArgFunc> {
+impl<F: Fn(&mut SystemFormat, &mut FetchInfo, &'static str) -> Result<(), c_int>> Argument<F> {
     const fn new(
         s_s: &'static str,
         l_s: &'static str,
         desc: &'static str,
-        fn_arg: ArgFunc,
-    ) -> Self {
+        fn_arg: F,
+    ) -> Argument<F> {
         Self {
             short_str: s_s,
             long_str: l_s,
