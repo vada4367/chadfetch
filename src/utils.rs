@@ -178,6 +178,36 @@ pub fn time(secs: size_t) -> CSTR {
     result.as_ptr() as CSTR
 }
 
+
+pub fn full_path(dir_name: CSTR, part_name: CSTR) -> CSTR {
+    let mut dir;
+    let d = unsafe { opendir(dir_name) };
+
+    if d.is_null() {
+        return core::ptr::null();
+    }
+
+    let path = [0; LEN_STRING];
+    loop {
+        unsafe {
+            dir = readdir(d);
+            if strstr(c_str(&(*dir).d_name), part_name)
+                != core::ptr::null_mut()
+            {
+                sprintf(
+                    path.as_ptr() as *mut c_char,
+                    c_str("%s%s\0"),
+                    dir_name,
+                    c_str(&(*dir).d_name),
+                );
+                break;
+            }
+        }
+    }
+
+    path.as_ptr() as CSTR
+}
+
 macro_rules! delete_char {
     ($string:expr, $char:expr) => {{
         let mut p = $string;

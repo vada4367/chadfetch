@@ -1,30 +1,9 @@
 use crate::get_info::*;
 
 pub fn xbps() -> size_t {
-    let mut dir;
-    let d = unsafe { opendir(c_str("/var/db/xbps/\0")) };
-
-    if d.is_null() {
-        return 0;
-    }
-
-    let fname = [0; LEN_STRING];
-    loop {
-        unsafe {
-            dir = readdir(d);
-            if strstr(c_str(&(*dir).d_name), c_str("pkgdb\0"))
-                != core::ptr::null_mut()
-            {
-                sprintf(
-                    fname.as_ptr() as *mut c_char,
-                    c_str("/var/db/xbps/%s\0"),
-                    c_str(&(*dir).d_name),
-                );
-                break;
-            }
-        }
-    }
-    if c_str(&fname).is_null() {
+    let path = utils::full_path(c_str("/var/db/xbps/\0"), c_str("pkgdb\0"));
+    
+    if path.is_null() {
         return 0;
     }
 
@@ -32,7 +11,7 @@ pub fn xbps() -> size_t {
 
     let mut raw_file;
     unsafe {
-        let f = fopen(c_str(&fname), c_str("r\0"));
+        let f = fopen(path, c_str("r\0"));
 
         if f.is_null() {
             return 0;
@@ -41,7 +20,7 @@ pub fn xbps() -> size_t {
         let mut stat =
             MaybeUninit::<stat_struct>::uninit().assume_init();
 
-        stat_func(c_str(&fname), &mut stat);
+        stat_func(path, &mut stat);
         raw_file = malloc(stat.st_size as usize);
         fread(raw_file, 1, stat.st_size as size_t, f);
     }
