@@ -75,14 +75,20 @@ pub fn read_args(
     return Ok(());
 }
 
-struct Argument {
+struct Argument<
+    F: Fn(
+        &mut SystemFormat,
+        &mut FetchInfo,
+        &'static str,
+    ) -> Result<(), c_int>,
+> {
     short_str: &'static str,
     long_str: &'static str,
-    fn_argument: ArgFunc,
+    fn_argument: F,
     description: &'static str,
 }
 
-impl Argument {
+impl Argument<ArgFunc> {
     const fn new(
         s_s: &'static str,
         l_s: &'static str,
@@ -98,7 +104,7 @@ impl Argument {
     }
 }
 
-fn search_argument(key: &str) -> Result<&Argument, ()> {
+fn search_argument(key: &str) -> Result<&Argument<ArgFunc>, ()> {
     for i in ALL_ARGS {
         if i.short_str == key || i.long_str == key {
             return Ok(i);
@@ -127,28 +133,28 @@ fn get_str(array: &[*const u8], i: usize) -> Result<&str, ()> {
     return Ok(arg_str);
 }
 
-const HELP_ARG: Argument = Argument::new(
+const HELP_ARG: Argument<ArgFunc> = Argument::new(
     "-h\0",
     "--help\0",
     "Print this help screen\0",
     help,
 );
-const VERSION_ARG: Argument = Argument::new(
+const VERSION_ARG: Argument<ArgFunc> = Argument::new(
     "-v\0",
     "--version\0",
     "Print version info\0",
     version,
 );
-const LOGO_ARG: Argument =
+const LOGO_ARG: Argument<ArgFunc> =
     Argument::new("-l\0", "--logo\0", "Change logo\0", change_logo);
-const PALETTE_ARG: Argument = Argument::new(
+const PALETTE_ARG: Argument<ArgFunc> = Argument::new(
     "-p\0",
     "--palette\0",
     "Change palette\0",
     change_palette,
 );
 
-const ALL_ARGS: &[Argument] =
+const ALL_ARGS: &[Argument<ArgFunc>] =
     &[HELP_ARG, VERSION_ARG, LOGO_ARG, PALETTE_ARG];
 
 #[rustfmt::skip]
