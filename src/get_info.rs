@@ -1,15 +1,10 @@
-#![allow(
-    unreachable_patterns,
-    unused_variables,
-    unused_imports,
-    invalid_value
-)]
+#![allow(unused_variables, invalid_value)]
 
 use crate::libc::{
     c_str, fgets, fopen, fread, fscanf, geteuid, gethostname,
-    getpwuid, malloc, opendir, popen, printf, readdir, sprintf,
-    stat as stat_func, strcat, strchr, strcpy, strlen, strstr,
-    strtoll, time, uname, CSTR,
+    getpwuid, malloc, opendir, popen, readdir, sprintf,
+    stat as stat_func, strchr, strcpy, strlen, strstr, strtoll,
+    time, uname, CSTR,
 };
 
 use libc::{
@@ -17,15 +12,13 @@ use libc::{
     utsname,
 };
 
-use crate::fetch_info::FetchInfo;
-
 use core::mem::MaybeUninit;
 use core::slice;
 
 use crate::all_systems::{SystemFormat, ALL_SYSTEMS, OS};
 
-mod bsd;
-mod linux;
+pub mod bsd;
+pub mod linux;
 mod linux_pkgs;
 mod unix;
 
@@ -35,14 +28,7 @@ use crate::utils::LEN_STRING;
 impl SystemFormat<'_> {
     pub fn get_system() -> Self {
         let os = unix::get_os();
-        let mut os_name = c_str("unknown\0");
-
-        match os {
-            OS::Linux => {
-                os_name = Self::get_os_name().as_ptr() as CSTR;
-            }
-            _ => {}
-        }
+        let os_name = os.get_os_name().as_ptr() as CSTR;
 
         utils::delete_char!(os_name, '"' as c_int);
 
@@ -134,9 +120,5 @@ impl SystemFormat<'_> {
                 return c_str("unknown_os\0");
             }
         }
-    }
-
-    pub fn get_os_name() -> &'static str {
-        return linux::get_os_name();
     }
 }

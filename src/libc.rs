@@ -1,4 +1,4 @@
-#![allow(deprecated, dead_code)]
+#![allow(deprecated)]
 
 //
 // THIS FILE IS INTENDED TO SOLUTION
@@ -26,7 +26,6 @@ extern "C" {
     pub fn fscanf(stream: *mut FILE, format: CSTR, ...) -> c_int;
     pub fn geteuid() -> uid_t;
     pub fn getpwuid(uid: uid_t) -> *mut passwd;
-    pub fn strcat(s: *mut c_char, ct: CSTR);
     pub fn gethostname(name: *mut c_char, len: size_t) -> c_int;
     pub fn uname(buf: *mut utsname) -> c_int;
     pub fn sprintf(

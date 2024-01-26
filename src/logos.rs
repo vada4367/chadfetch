@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 use libc::size_t;
 
 #[derive(Clone, Copy)]

@@ -1,5 +1,4 @@
-#![allow(dead_code)]
-
+use crate::get_info::*;
 use crate::logos::*;
 use crate::palette::*;
 
@@ -11,6 +10,22 @@ pub enum OS {
     Linux,
     BSD,
     Unknown,
+}
+
+impl OS {
+    pub fn get_os_name(&self) -> &'static str {
+        match self {
+            OS::Linux => {
+                return linux::get_os_name();
+            }
+            OS::BSD => {
+                return bsd::get_os_name();
+            }
+            _ => {
+                return "unknown_os\0";
+            }
+        }
+    }
 }
 
 // MAIN STRUCT

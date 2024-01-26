@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use crate::get_info::*;
 
 pub fn device(
