@@ -39,10 +39,8 @@ pub fn search_logo(key: &str) -> Result<Logo<'_>, usize> {
     if !logo.is_some() {
         return Err(69);
     }
-    
-    Ok(
-        ALL_LOGO[logo.unwrap()].1
-    )
+
+    Ok(ALL_LOGO[logo.unwrap()].1)
 }
 
 pub const GIGACHAD_LOGO: Logo<'_> = Logo::new(
@@ -86,12 +84,12 @@ pub const VOID_LOGO: Logo<'_> = Logo::new(
     concat!(
         r#"
     ${c2}_______
- _ \______ -
+ _ \______ ^
 | \  ___  \ |
 | | /   \ | |
 | | \___/ | |
 | \______ \_|
- -_______\
+ ^_______\
 "#,
         "\0"
     ),
