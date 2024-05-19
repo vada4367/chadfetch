@@ -1,8 +1,7 @@
 use crate::get_info::*;
 
 pub fn xbps() -> size_t {
-    let path =
-        utils::full_path(c_str("/var/db/xbps/\0"), c_str("pkgdb\0"));
+    let path = utils::full_path(c_str("/var/db/xbps/\0"), c_str("pkgdb\0"));
 
     if path.is_null() {
         return 0;
@@ -18,8 +17,7 @@ pub fn xbps() -> size_t {
             return 0;
         }
 
-        let mut stat =
-            MaybeUninit::<stat_struct>::uninit().assume_init();
+        let mut stat = MaybeUninit::<stat_struct>::uninit().assume_init();
 
         stat_func(path, &mut stat);
         raw_file = malloc(stat.st_size as usize);
@@ -29,8 +27,7 @@ pub fn xbps() -> size_t {
     let mut count = 0;
     unsafe {
         loop {
-            raw_file = strstr(raw_file as CSTR, installed_string)
-                as *mut c_void;
+            raw_file = strstr(raw_file as CSTR, installed_string) as *mut c_void;
             if raw_file.is_null() {
                 break;
             }
@@ -45,6 +42,13 @@ pub fn xbps() -> size_t {
 pub fn pacman() -> size_t {
     let pacman_dir = c_str("/var/lib/pacman/local\0");
     let pkgs = unix::search_pkgs(pacman_dir);
+
+    pkgs
+}
+
+pub fn emerge() -> size_t {
+    let pkgdb_dir = c_str("/var/db/pkg/\0");
+    let pkgs = unix::search_pkgs_deeply(pkgdb_dir);
 
     pkgs
 }

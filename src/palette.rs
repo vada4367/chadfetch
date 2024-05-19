@@ -75,5 +75,6 @@ pub const ALL_PALETTE: &[(&str, Palette)] = &[
 ];
 
 pub const GIGACHAD_PALETTE: Palette = Palette::new(38, 31, 33);
+pub const GENTOO_PALETTE: Palette = Palette::new(37, 35, 94);
 pub const VOID_PALETTE: Palette = Palette::new(37, 32, 33);
 pub const OPENBSD_PALETTE: Palette = Palette::new(37, 93, 94);

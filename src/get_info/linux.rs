@@ -1,9 +1,6 @@
 use crate::get_info::*;
 
-pub fn device(
-    sys_format: &SystemFormat,
-    info_space: size_t,
-) -> CSTR {
+pub fn device(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
@@ -41,15 +38,11 @@ pub fn device(
     c_str(&result)
 }
 
-pub fn uptime(
-    sys_format: &SystemFormat,
-    info_space: size_t,
-) -> CSTR {
+pub fn uptime(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING + 100];
     let spaces_str = utils::spaces(info_space);
 
-    let file =
-        unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
+    let file = unsafe { fopen(c_str("/proc/uptime\0"), c_str("r\0")) };
 
     let mut line = [0; LEN_STRING + 30];
     let (mut uptime, mut _uptime) = (0, 0);
@@ -57,12 +50,7 @@ pub fn uptime(
     if !file.is_null() {
         unsafe {
             fgets(line.as_mut_ptr(), line.len() as c_int, file);
-            sscanf(
-                c_str(&line),
-                c_str("%d %d\0"),
-                &mut uptime,
-                &mut _uptime,
-            );
+            sscanf(c_str(&line), c_str("%d %d\0"), &mut uptime, &mut _uptime);
         }
     } else {
         uptime = 0;
@@ -82,14 +70,10 @@ pub fn uptime(
     c_str(&result)
 }
 
-pub fn memory(
-    sys_format: &SystemFormat,
-    info_space: size_t,
-) -> CSTR {
+pub fn memory(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
-    let file =
-        unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
+    let file = unsafe { fopen(c_str("/proc/meminfo\0"), c_str("r\0")) };
 
     if file.is_null() {
         unsafe {
@@ -108,14 +92,8 @@ pub fn memory(
     let mut line = [0; LEN_STRING + 30];
 
     let mem_available;
-    let (
-        mut mem_total,
-        mut sh_mem,
-        mut mem_free,
-        mut buffers,
-        mut cached,
-        mut s_reclaimable,
-    ) = (0, 0, 0, 0, 0, 0);
+    let (mut mem_total, mut sh_mem, mut mem_free, mut buffers, mut cached, mut s_reclaimable) =
+        (0, 0, 0, 0, 0, 0);
 
     while mem_total == 0
         || mem_free == 0
@@ -125,8 +103,7 @@ pub fn memory(
         || sh_mem == 0
     {
         unsafe {
-            let fgets_line =
-                fgets(line.as_mut_ptr(), line.len() as c_int, file);
+            let fgets_line = fgets(line.as_mut_ptr(), line.len() as c_int, file);
 
             if !strstr(c_str(&line), c_str("MemTotal\0")).is_null() {
                 sscanf(
@@ -136,29 +113,15 @@ pub fn memory(
                 );
             }
             if !strstr(c_str(&line), c_str("MemFree\0")).is_null() {
-                sscanf(
-                    line.as_ptr() as CSTR,
-                    c_str("MemFree: %d\0"),
-                    &mut mem_free,
-                );
+                sscanf(line.as_ptr() as CSTR, c_str("MemFree: %d\0"), &mut mem_free);
             }
             if !strstr(c_str(&line), c_str("Buffers\0")).is_null() {
-                sscanf(
-                    line.as_ptr() as CSTR,
-                    c_str("Buffers: %d\0"),
-                    &mut buffers,
-                );
+                sscanf(line.as_ptr() as CSTR, c_str("Buffers: %d\0"), &mut buffers);
             }
             if !strstr(c_str(&line), c_str("Cached\0")).is_null() {
-                sscanf(
-                    line.as_ptr() as CSTR,
-                    c_str("Cached: %d\0"),
-                    &mut cached,
-                );
+                sscanf(line.as_ptr() as CSTR, c_str("Cached: %d\0"), &mut cached);
             }
-            if !strstr(c_str(&line), c_str("SReclaimable\0"))
-                .is_null()
-            {
+            if !strstr(c_str(&line), c_str("SReclaimable\0")).is_null() {
                 sscanf(
                     line.as_ptr() as CSTR,
                     c_str("SReclaimable: %d\0"),
@@ -166,17 +129,12 @@ pub fn memory(
                 );
             }
             if !strstr(c_str(&line), c_str("Shmem\0")).is_null() {
-                sscanf(
-                    line.as_ptr() as CSTR,
-                    c_str("Shmem: %d\0"),
-                    &mut sh_mem,
-                );
+                sscanf(line.as_ptr() as CSTR, c_str("Shmem: %d\0"), &mut sh_mem);
             }
         }
     }
 
-    mem_available =
-        mem_free + buffers + cached + s_reclaimable - sh_mem;
+    mem_available = mem_free + buffers + cached + s_reclaimable - sh_mem;
 
     unsafe {
         sprintf(
@@ -198,7 +156,11 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 
     let mut distro_pkgs = 0;
 
-    let system_pkgs = &[linux_pkgs::xbps(), linux_pkgs::pacman()];
+    let system_pkgs = &[
+        linux_pkgs::xbps(),
+        linux_pkgs::pacman(),
+        linux_pkgs::emerge(),
+    ];
 
     for pkgs in system_pkgs {
         if pkgs.clone() != 0 {
@@ -225,8 +187,7 @@ pub fn pkgs(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
 }
 
 pub fn get_os_name() -> &'static str {
-    let os_release =
-        unsafe { fopen(c_str("/etc/os-release\0"), c_str("r\0")) };
+    let os_release = unsafe { fopen(c_str("/etc/os-release\0"), c_str("r\0")) };
 
     if os_release.is_null() {
         return "unknown\0";
@@ -236,11 +197,7 @@ pub fn get_os_name() -> &'static str {
     let os_name_str = unsafe { malloc(40) } as *mut c_char;
 
     unsafe {
-        let fgets_line = fgets(
-            os_name.as_mut_ptr(),
-            os_name.len() as c_int,
-            os_release,
-        );
+        let fgets_line = fgets(os_name.as_mut_ptr(), os_name.len() as c_int, os_release);
 
         if !strstr(c_str(&os_name), c_str("NAME\0")).is_null() {
             sscanf(

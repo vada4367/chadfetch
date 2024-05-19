@@ -95,3 +95,20 @@ pub const VOID_LOGO: Logo<'_> = Logo::new(
     13,
     7,
 );
+
+pub const GENTOO_LOGO: Logo<'_> = Logo::new(
+    concat!(
+        r#"
+${c2} _-----_
+{         \
+{   ${c1}_--_${c2}   \
+ \  ${c1}^--^${c2}   }
+ /        >
+[       ]
+ -___--^
+"#,
+        "\0"
+    ),
+    13,
+    7,
+);

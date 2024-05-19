@@ -1,4 +1,7 @@
+use libc::DT_DIR;
+
 use crate::get_info::*;
+use libc::sprintf;
 
 pub fn user_host(sys_format: &SystemFormat) -> CSTR {
     let user = unsafe { (*getpwuid(geteuid())).pw_name };
@@ -40,15 +43,11 @@ pub fn os(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     result.as_ptr() as CSTR
 }
 
-pub fn kernel(
-    sys_format: &SystemFormat,
-    info_space: size_t,
-) -> CSTR {
+pub fn kernel(sys_format: &SystemFormat, info_space: size_t) -> CSTR {
     let result = [0; LEN_STRING + 16];
     let spaces_str = utils::spaces(info_space);
 
-    let mut name =
-        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
 
     unsafe {
         uname(&mut name);
@@ -67,8 +66,7 @@ pub fn kernel(
 }
 
 pub fn get_os() -> OS {
-    let mut name =
-        unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
+    let mut name = unsafe { MaybeUninit::<utsname>::uninit().assume_init() };
 
     unsafe {
         uname(&mut name);
@@ -108,6 +106,35 @@ pub fn search_pkgs(dname: CSTR) -> size_t {
                 }
 
                 pkgs += 1;
+            }
+        }
+    }
+
+    pkgs
+}
+
+pub fn search_pkgs_deeply(dname: CSTR) -> size_t {
+    let mut dir;
+    let d = unsafe { opendir(dname) };
+
+    let mut pkgs = 0;
+    if d != core::ptr::null_mut() {
+        loop {
+            unsafe {
+                dir = readdir(d);
+                if dir == core::ptr::null_mut() {
+                    break;
+                }
+                if (*dir).d_type == DT_DIR {
+                    let next_dir = [0 as c_char; 256];
+                    sprintf(
+                        next_dir.as_ptr() as *mut c_char,
+                        c_str("%s%s\0"),
+                        dname as *const c_char,
+                        (*dir).d_name.as_ptr() as CSTR,
+                    );
+                    pkgs += search_pkgs(next_dir.as_ptr() as CSTR);
+                }
             }
         }
     }

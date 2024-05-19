@@ -68,7 +68,8 @@ impl SystemFormat<'_> {
 //
 // GOOD LUCK!
 
-pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
+pub const ALL_SYSTEMS: [SystemFormat<'_>; 4] = [
+    SystemFormat::new(OS::Linux, GENTOO_LOGO, "Gentoo\0", GENTOO_PALETTE, 0),
     SystemFormat::new(
         OS::Linux,
         GIGACHAD_LOGO,
@@ -76,18 +77,6 @@ pub const ALL_SYSTEMS: [SystemFormat<'_>; 3] = [
         GIGACHAD_PALETTE,
         0,
     ),
-    SystemFormat::new(
-        OS::Linux,
-        VOID_LOGO,
-        "Void\0",
-        VOID_PALETTE,
-        0,
-    ),
-    SystemFormat::new(
-        OS::BSD,
-        OPENBSD_LOGO,
-        "OpenBSD\0",
-        OPENBSD_PALETTE,
-        0,
-    ),
+    SystemFormat::new(OS::Linux, VOID_LOGO, "Void\0", VOID_PALETTE, 0),
+    SystemFormat::new(OS::BSD, OPENBSD_LOGO, "OpenBSD\0", OPENBSD_PALETTE, 0),
 ];
