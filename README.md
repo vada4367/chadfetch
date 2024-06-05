@@ -13,7 +13,7 @@ SAFELY :P
 # Installation:
 
 ```
-cargo install
+cargo install chadfetch
 ```
 ```
 $HOME/.cargo/bin/chadfetch 
